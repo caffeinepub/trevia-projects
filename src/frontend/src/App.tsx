@@ -564,10 +564,10 @@ function Footer() {
                 src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
                 alt="Trevia Projects"
                 style={{
-                  height: "36px",
+                  height: "56px",
                   width: "auto",
                   objectFit: "contain",
-                  filter: "brightness(0) invert(1) opacity(0.85)",
+                  filter: "brightness(0) invert(1) opacity(0.95)",
                 }}
               />
             </div>
@@ -599,6 +599,15 @@ function Footer() {
                   className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
                 >
                   About
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/projects" })}
+                  className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+                >
+                  Projects
                 </button>
               </li>
               <li>
@@ -1116,6 +1125,453 @@ function OurProductsSection({
 }
 
 // ---------------------------------------------------------------------------
+// PROJECTS data
+// ---------------------------------------------------------------------------
+const PROJECTS = [
+  {
+    id: 1,
+    title: "Greenfield Villa",
+    type: "Residential Villa",
+    location: "Guntur, AP",
+    status: "Completed",
+    year: "Completed 2024",
+    area: "4,200 sq.ft",
+    desc: "Luxury villa with modern architecture, premium interiors, and a manicured landscaped garden — crafted for refined living.",
+    image: "/assets/generated/project-villa-completed.dim_800x500.jpg",
+  },
+  {
+    id: 2,
+    title: "Horizon Office Complex",
+    type: "Commercial Building",
+    location: "Vijayawada, AP",
+    status: "Completed",
+    year: "Completed 2023",
+    area: "12,000 sq.ft",
+    desc: "Contemporary office complex with glass facade, modern amenities, and energy-efficient design built for thriving businesses.",
+    image: "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+  },
+  {
+    id: 3,
+    title: "Skyline Residency",
+    type: "Apartment Complex",
+    location: "Guntur, AP",
+    status: "Completed",
+    year: "Completed 2024",
+    area: "24 Units",
+    desc: "Premium 24-unit apartment complex with modern amenities, underground parking, and a stunning rooftop terrace.",
+    image: "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+  },
+  {
+    id: 4,
+    title: "Palm Grove Estate",
+    type: "Luxury Villa",
+    location: "Guntur, AP",
+    status: "Ongoing",
+    year: "Est. Dec 2025",
+    area: "5,500 sq.ft",
+    desc: "5,500 sq.ft premium villa with pool, smart home integration, and contemporary elevation design for a discerning client.",
+    image: "/assets/generated/project-villa-ongoing.dim_800x500.jpg",
+  },
+  {
+    id: 5,
+    title: "Central Square Mall",
+    type: "Commercial Complex",
+    location: "Vijayawada, AP",
+    status: "Ongoing",
+    year: "Est. Mar 2026",
+    area: "45,000 sq.ft",
+    desc: "45,000 sq.ft multi-level commercial complex with retail, office, and food court spaces — a landmark in the making.",
+    image: "/assets/generated/project-commercial-ongoing.dim_800x500.jpg",
+  },
+  {
+    id: 6,
+    title: "Modern Haven Renovation",
+    type: "Interior Renovation",
+    location: "Hyderabad, TS",
+    status: "Ongoing",
+    year: "Est. Jun 2025",
+    area: "3,200 sq.ft",
+    desc: "Complete home transformation spanning 3,200 sq.ft — modular kitchen, premium flooring, false ceilings, and modern interiors.",
+    image: "/assets/generated/project-renovation-ongoing.dim_800x500.jpg",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// ProjectsSection (Home page section)
+// ---------------------------------------------------------------------------
+function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
+  const navigate = useNavigate();
+
+  return (
+    <section
+      data-ocid="projects.section"
+      id="projects"
+      className="w-full py-20 px-4 sm:px-6"
+      style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-4">
+          <h2
+            className="font-cormorant uppercase tracking-[0.18em]"
+            style={{
+              fontSize: "clamp(28px, 4vw, 42px)",
+              fontWeight: 600,
+              color: "oklch(0.22 0.01 60)",
+            }}
+          >
+            Our Projects
+          </h2>
+          <p
+            className="font-poppins mt-2"
+            style={{
+              fontSize: "13px",
+              color: "oklch(0.52 0.04 60)",
+              letterSpacing: "0.08em",
+            }}
+          >
+            Completed &amp; Ongoing Developments
+          </p>
+          <div
+            className="mx-auto mt-3 h-px"
+            style={{ maxWidth: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+          {PROJECTS.map((project, i) => (
+            <div
+              key={project.id}
+              data-ocid={`projects.item.${i + 1}`}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm"
+              style={{
+                border: "1px solid oklch(0.92 0.01 80)",
+                transition:
+                  "transform 220ms ease-out, box-shadow 220ms ease-out",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(-4px)";
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 8px 32px oklch(0.3 0.02 60 / 0.12)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(0)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "";
+              }}
+            >
+              <div
+                className="relative overflow-hidden"
+                style={{ aspectRatio: "16/9" }}
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                />
+                <span
+                  className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                  style={{
+                    letterSpacing: "0.08em",
+                    backgroundColor:
+                      project.status === "Completed"
+                        ? "oklch(0.45 0.14 155)"
+                        : "oklch(0.60 0.18 55)",
+                  }}
+                >
+                  {project.status}
+                </span>
+              </div>
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3
+                    className="font-cormorant font-semibold"
+                    style={{
+                      fontSize: "20px",
+                      color: "oklch(0.18 0.01 60)",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {project.title}
+                  </h3>
+                  <span
+                    className="font-poppins shrink-0"
+                    style={{
+                      fontSize: "11px",
+                      color: "oklch(0.55 0.06 55)",
+                      fontWeight: 500,
+                      marginTop: "3px",
+                    }}
+                  >
+                    {project.year}
+                  </span>
+                </div>
+                <p
+                  className="font-poppins"
+                  style={{
+                    fontSize: "12px",
+                    color: "oklch(0.55 0.02 60)",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {project.type} · {project.location}
+                </p>
+                <p
+                  className="font-poppins"
+                  style={{
+                    fontSize: "13px",
+                    color: "oklch(0.40 0.02 60)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {project.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {showViewAll && (
+          <div className="flex justify-center mt-10">
+            <button
+              type="button"
+              data-ocid="projects.view_all.button"
+              onClick={() => navigate({ to: "/projects" })}
+              className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "oklch(0.52 0.09 50)",
+                border: "1px solid oklch(0.52 0.09 50)",
+                borderRadius: "2px",
+                padding: "10px 32px",
+                background: "transparent",
+                cursor: "pointer",
+                minHeight: "44px",
+              }}
+            >
+              View All Projects
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ProjectsPage
+// ---------------------------------------------------------------------------
+function ProjectsPageComponent() {
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState<"All" | "Completed" | "Ongoing">("All");
+
+  const filtered =
+    filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.status === filter);
+
+  return (
+    <PageShell>
+      <section
+        data-ocid="projects.page"
+        className="w-full pt-14 pb-2 px-4 sm:px-6"
+        style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
+      >
+        <div className="max-w-7xl mx-auto text-center">
+          <p
+            className="font-poppins uppercase tracking-[0.22em] mb-2"
+            style={{ fontSize: "11px", color: "oklch(0.65 0.02 60)" }}
+          >
+            Our Work
+          </p>
+          <h1
+            className="font-cormorant"
+            style={{
+              fontSize: "clamp(32px, 5vw, 56px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Our Projects
+          </h1>
+          <div
+            className="mx-auto mt-3 h-px"
+            style={{ maxWidth: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+          />
+        </div>
+      </section>
+
+      <section
+        className="w-full py-10 px-4 sm:px-6"
+        style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Filter tabs */}
+          <div
+            className="flex justify-center gap-3 mb-10"
+            data-ocid="projects.filter.tab"
+          >
+            {(["All", "Completed", "Ongoing"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setFilter(tab)}
+                className="font-poppins uppercase tracking-widest transition-all"
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  padding: "8px 24px",
+                  borderRadius: "2px",
+                  cursor: "pointer",
+                  border:
+                    filter === tab
+                      ? "1px solid oklch(0.52 0.09 50)"
+                      : "1px solid oklch(0.82 0.02 60)",
+                  backgroundColor:
+                    filter === tab ? "oklch(0.52 0.09 50)" : "transparent",
+                  color: filter === tab ? "white" : "oklch(0.52 0.04 60)",
+                }}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((project, i) => (
+              <div
+                key={project.id}
+                data-ocid={`projects.item.${i + 1}`}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm"
+                style={{
+                  border: "1px solid oklch(0.92 0.01 80)",
+                  transition:
+                    "transform 220ms ease-out, box-shadow 220ms ease-out",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(-4px)";
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 8px 32px oklch(0.3 0.02 60 / 0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "";
+                }}
+              >
+                <div
+                  className="relative overflow-hidden"
+                  style={{ aspectRatio: "16/9" }}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    loading="lazy"
+                  />
+                  <span
+                    className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                    style={{
+                      letterSpacing: "0.08em",
+                      backgroundColor:
+                        project.status === "Completed"
+                          ? "oklch(0.45 0.14 155)"
+                          : "oklch(0.60 0.18 55)",
+                    }}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h3
+                      className="font-cormorant font-semibold"
+                      style={{
+                        fontSize: "20px",
+                        color: "oklch(0.18 0.01 60)",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {project.title}
+                    </h3>
+                    <span
+                      className="font-poppins shrink-0"
+                      style={{
+                        fontSize: "11px",
+                        color: "oklch(0.55 0.06 55)",
+                        fontWeight: 500,
+                        marginTop: "3px",
+                      }}
+                    >
+                      {project.year}
+                    </span>
+                  </div>
+                  <p
+                    className="font-poppins"
+                    style={{
+                      fontSize: "12px",
+                      color: "oklch(0.55 0.02 60)",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {project.type} · {project.location}
+                  </p>
+                  <p
+                    className="font-poppins"
+                    style={{
+                      fontSize: "13px",
+                      color: "oklch(0.40 0.02 60)",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {project.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filtered.length === 0 && (
+            <div data-ocid="projects.empty_state" className="text-center py-20">
+              <p
+                className="font-poppins"
+                style={{ color: "oklch(0.55 0.02 60)", fontSize: "15px" }}
+              >
+                No projects found.
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-center mt-10">
+            <button
+              type="button"
+              data-ocid="projects.back.button"
+              onClick={() => navigate({ to: "/" })}
+              className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "oklch(0.52 0.09 50)",
+                border: "1px solid oklch(0.52 0.09 50)",
+                borderRadius: "2px",
+                padding: "10px 32px",
+                background: "transparent",
+                cursor: "pointer",
+                minHeight: "44px",
+              }}
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </section>
+    </PageShell>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // AboutUs section
 // ---------------------------------------------------------------------------
 function AboutUsSection() {
@@ -1151,17 +1607,32 @@ function AboutUsSection() {
         }}
       />
 
-      <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-        {/* Left: text content */}
-        <div className="flex-1 text-center md:text-left">
+      <div className="max-w-5xl mx-auto relative z-10 flex flex-col items-center gap-10">
+        {/* Logo: centered at top */}
+        <div className="flex items-center justify-center">
+          <img
+            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
+            alt="Trevia Projects Logo"
+            style={{
+              maxWidth: "380px",
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
+              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.22))",
+            }}
+          />
+        </div>
+
+        {/* Text content: below logo, centered */}
+        <div className="flex flex-col items-center text-center">
           <h2
             className="font-cormorant"
             style={{
-              fontSize: "clamp(36px, 5vw, 56px)",
+              fontSize: "clamp(32px, 5vw, 52px)",
               fontWeight: 600,
               color: "oklch(0.18 0.01 60)",
               letterSpacing: "0.04em",
-              marginBottom: "28px",
+              marginBottom: "24px",
             }}
           >
             Trevia Projects
@@ -1173,7 +1644,7 @@ function AboutUsSection() {
               fontSize: "15px",
               color: "oklch(0.38 0.02 60)",
               lineHeight: 1.85,
-              marginBottom: "20px",
+              marginBottom: "18px",
             }}
           >
             Trevia Projects is a trusted construction company delivering
@@ -1188,7 +1659,7 @@ function AboutUsSection() {
               fontSize: "15px",
               color: "oklch(0.38 0.02 60)",
               lineHeight: 1.85,
-              marginBottom: "36px",
+              marginBottom: "32px",
             }}
           >
             With a strong focus on quality, safety, and innovation, we ensure
@@ -1202,14 +1673,14 @@ function AboutUsSection() {
             style={{
               fontSize: "18px",
               color: "oklch(0.38 0.02 60)",
-              marginBottom: "20px",
+              marginBottom: "18px",
               letterSpacing: "0.04em",
             }}
           >
             Explore Our Services
           </p>
 
-          <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-3 mb-16">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-3 mb-12">
             {serviceLinks.map((link) => (
               <button
                 key={link}
@@ -1234,7 +1705,7 @@ function AboutUsSection() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center md:justify-start gap-3">
+          <div className="flex items-center justify-center gap-3">
             <div
               className="h-px flex-1"
               style={{
@@ -1253,20 +1724,6 @@ function AboutUsSection() {
               }}
             />
           </div>
-        </div>
-
-        {/* Right: Trevia logo */}
-        <div className="flex-shrink-0 w-64 md:w-80 lg:w-96 flex items-center justify-center">
-          <img
-            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
-            alt="Trevia Projects Logo"
-            style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "contain",
-              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.18))",
-            }}
-          />
         </div>
       </div>
     </section>
@@ -1715,6 +2172,7 @@ function HomePageComponent() {
         <HeroSection />
         <OurServicesSection showViewAll />
         <OurProductsSection showViewAll />
+        <ProjectsSection showViewAll />
         <AboutUsSection />
       </PageShell>
     </div>
@@ -3098,6 +3556,12 @@ const serviceDetailRoute = createRoute({
   component: ServiceDetailPage,
 });
 
+const projectsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/projects",
+  component: ProjectsPageComponent,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   contactRoute,
@@ -3106,6 +3570,7 @@ const routeTree = rootRoute.addChildren([
   adminRoute,
   productDetailRoute,
   serviceDetailRoute,
+  projectsRoute,
 ]);
 
 // ---------------------------------------------------------------------------
