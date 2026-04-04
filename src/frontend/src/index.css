@@ -63,14 +63,13 @@
 
   html {
     scroll-behavior: smooth;
-    /* Prevent horizontal scroll at the root level */
-    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: "Poppins", sans-serif;
-    overflow-x: hidden;
+    /* Prevent horizontal scroll without breaking window.scrollY / position:fixed */
+    overflow-x: clip;
     /* Prevent any fixed-width child from breaking the viewport */
     min-width: 0;
   }

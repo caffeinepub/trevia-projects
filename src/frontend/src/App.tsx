@@ -156,25 +156,38 @@ const PRODUCTS = [
 // ScrollToTopButton with circular progress indicator
 // ---------------------------------------------------------------------------
 function ScrollToTopButton() {
-  const [visible, setVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
 
+  // Reset progress when route changes (page navigated to top)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers reset intentionally
+  useEffect(() => {
+    setScrollProgress(0);
+  }, [pathname]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-attach listener on route change
   useEffect(() => {
     function onScroll() {
-      const scrollTop = window.scrollY;
+      const scrollTop =
+        window.scrollY ?? document.documentElement.scrollTop ?? 0;
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
       setScrollProgress(Math.min(100, Math.max(0, progress)));
-      setVisible(scrollTop > 300);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
+    // Call once on mount to sync state
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname]);
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  // Show button only when user has scrolled at least a little
+  const visible = scrollProgress > 1;
 
   if (!visible) return null;
 
@@ -2515,7 +2528,7 @@ function ServiceDetailPage() {
                     "translateY(0)";
                 }}
               >
-                🟢 Choose Plan
+                Choose Plan
               </button>
             </div>
           ))}
@@ -3013,7 +3026,7 @@ function ProductDetailPage() {
                 <span style={{ position: "relative", zIndex: 1 }}>
                   {buying
                     ? "Connecting to WhatsApp..."
-                    : "🟢 Buy Now via WhatsApp"}
+                    : "Buy Now via WhatsApp"}
                 </span>
               </button>
             </div>
@@ -3031,6 +3044,14 @@ function ProductDetailPage() {
 // Root route component
 // ---------------------------------------------------------------------------
 function RootRoute() {
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname scroll reset is intentional
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+
   return <Outlet />;
 }
 
