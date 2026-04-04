@@ -43,8 +43,6 @@ import {
 } from "@tanstack/react-router";
 import {
   Building2,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   Loader2,
   Mail,
@@ -61,142 +59,37 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Project, ProjectId } from "./backend";
 import { useActor } from "./hooks/useActor";
-
-// ---------------------------------------------------------------------------
-// Static seed data for sample projects
-// ---------------------------------------------------------------------------
-const SEED_PROJECTS: Array<{ id: bigint; data: Project }> = [
-  {
-    id: BigInt(1),
-    data: {
-      title: "Luxury Villa Project",
-      location: "Guntur City",
-      imageUrl:
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&auto=format",
-      forSaleUnits: BigInt(120),
-      forRentUnits: BigInt(30),
-      ongoingPercentage: BigInt(65),
-      completedPercentage: BigInt(35),
-    },
-  },
-  {
-    id: BigInt(2),
-    data: {
-      title: "Smart Apartments",
-      location: "Hyderabad",
-      imageUrl:
-        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format",
-      forSaleUnits: BigInt(200),
-      forRentUnits: BigInt(80),
-      ongoingPercentage: BigInt(40),
-      completedPercentage: BigInt(60),
-    },
-  },
-  {
-    id: BigInt(3),
-    data: {
-      title: "IT Office Park",
-      location: "Bangalore",
-      imageUrl:
-        "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&auto=format",
-      forSaleUnits: BigInt(50),
-      forRentUnits: BigInt(120),
-      ongoingPercentage: BigInt(25),
-      completedPercentage: BigInt(75),
-    },
-  },
-  {
-    id: BigInt(4),
-    data: {
-      title: "Highway Infrastructure",
-      location: "Andhra Pradesh",
-      imageUrl:
-        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format",
-      forSaleUnits: BigInt(0),
-      forRentUnits: BigInt(0),
-      ongoingPercentage: BigInt(80),
-      completedPercentage: BigInt(20),
-    },
-  },
-  {
-    id: BigInt(5),
-    data: {
-      title: "Premium Villas",
-      location: "Vizag",
-      imageUrl:
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format",
-      forSaleUnits: BigInt(85),
-      forRentUnits: BigInt(15),
-      ongoingPercentage: BigInt(55),
-      completedPercentage: BigInt(45),
-    },
-  },
-  {
-    id: BigInt(6),
-    data: {
-      title: "Commercial Complex",
-      location: "Chennai",
-      imageUrl:
-        "https://images.unsplash.com/photo-1582407947304-fd86f28f078b?w=600&auto=format",
-      forSaleUnits: BigInt(60),
-      forRentUnits: BigInt(90),
-      ongoingPercentage: BigInt(30),
-      completedPercentage: BigInt(70),
-    },
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-interface ProjectFormData {
-  title: string;
-  location: string;
-  imageUrl: string;
-  forSaleUnits: string;
-  forRentUnits: string;
-  ongoingPercentage: string;
-  completedPercentage: string;
-}
-
-const EMPTY_FORM: ProjectFormData = {
-  title: "",
-  location: "",
-  imageUrl: "",
-  forSaleUnits: "0",
-  forRentUnits: "0",
-  ongoingPercentage: "0",
-  completedPercentage: "100",
-};
+import AdminPage from "./pages/AdminPage";
 
 // ---------------------------------------------------------------------------
 // Services data
 // ---------------------------------------------------------------------------
 const SERVICES = [
   {
-    image: "/assets/generated/service-exterior-construction.dim_800x500.jpg",
-    title: "Exterior Construction",
-    desc: "Our Exterior Construction Services Enhance Durability, Safety, And Visual Appeal For Residential And Commercial Buildings.",
+    image: "/assets/generated/service-construction-services.dim_800x500.jpg",
+    title: "Construction Services",
+    desc: "We provide complete construction services with a focus on quality, durability, and modern design. From planning to execution, we ensure every project is delivered with precision and excellence.",
   },
   {
-    image: "/assets/generated/service-architectural-planning.dim_800x500.jpg",
+    image:
+      "/assets/generated/service-architectural-planning-v2.dim_800x500.jpg",
     title: "Architectural Planning",
     desc: "We Deliver Detailed Architectural Designs That Combine Innovation, Structural Integrity, And Practical Functionality.",
   },
   {
-    image: "/assets/generated/service-building-construction.dim_800x500.jpg",
-    title: "Building Construction",
-    desc: "From Foundations To Final Finishes, We Manage Complete Building Construction Projects With Quality And Efficiency.",
+    image: "/assets/generated/service-waterproofing.dim_800x500.jpg",
+    title: "Waterproofing Solutions",
+    desc: "We provide advanced waterproofing solutions to protect your building from leakage, dampness, and water damage. Our services ensure long-lasting protection and improved building life.",
   },
   {
-    image: "/assets/generated/service-interior-construction.dim_800x500.jpg",
+    image: "/assets/generated/service-interior-construction-v2.dim_800x500.jpg",
     title: "Interior Construction",
     desc: "We Create Functional And Modern Interior Spaces Using Quality Materials, Precise Planning, And Expert Craftsmanship.",
   },
   {
-    image: "/assets/generated/service-road-infrastructure.dim_800x500.jpg",
-    title: "Road & Infrastructure Works",
-    desc: "We Provide Reliable Road Construction And Repair Services, Ensuring Safety, Durability, And Long-Term Performance.",
+    image: "/assets/generated/service-renovation-remodeling.dim_800x500.jpg",
+    title: "Renovation & Remodeling",
+    desc: "We transform old and outdated spaces into modern, functional, and stylish environments. From minor upgrades to complete makeovers, we deliver high-quality renovation solutions tailored to your needs.",
   },
 ];
 
@@ -205,10 +98,12 @@ const SERVICES = [
 // ---------------------------------------------------------------------------
 // Selected product for detail page (module-level state)
 let selectedProduct: (typeof PRODUCTS)[number] | null = null;
+// Selected service for detail page (module-level state)
+let selectedService: (typeof SERVICES)[number] | null = null;
 
 const PRODUCTS = [
   {
-    image: "/assets/generated/product-interior-frame.dim_800x600.jpg",
+    image: "/assets/generated/product-interior-frame-v2.dim_800x600.jpg",
     badge: "INTERIOR",
     name: "Interior Frames",
     price: "₹12,500",
@@ -224,7 +119,7 @@ const PRODUCTS = [
     ] as [string, string][],
   },
   {
-    image: "/assets/generated/product-wooden-door.dim_800x600.jpg",
+    image: "/assets/generated/product-wooden-door-v2.dim_800x600.jpg",
     badge: "WOODEN",
     name: "Wooden Doors",
     price: "₹18,000",
@@ -240,7 +135,7 @@ const PRODUCTS = [
     ] as [string, string][],
   },
   {
-    image: "/assets/generated/product-exterior-door.dim_800x600.jpg",
+    image: "/assets/generated/product-exterior-door-v2.dim_800x600.jpg",
     badge: "EXTERIOR",
     name: "Exterior Doors",
     price: "₹22,000",
@@ -258,24 +153,47 @@ const PRODUCTS = [
 ];
 
 // ---------------------------------------------------------------------------
-// ScrollToTop button
+// ScrollToTopButton with circular progress indicator
 // ---------------------------------------------------------------------------
 function ScrollToTopButton() {
-  const [visible, setVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
 
+  // Reset progress when route changes (page navigated to top)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers reset intentionally
+  useEffect(() => {
+    setScrollProgress(0);
+  }, [pathname]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-attach listener on route change
   useEffect(() => {
     function onScroll() {
-      setVisible(window.scrollY > 300);
+      const scrollTop =
+        window.scrollY ?? document.documentElement.scrollTop ?? 0;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      setScrollProgress(Math.min(100, Math.max(0, progress)));
     }
     window.addEventListener("scroll", onScroll, { passive: true });
+    // Call once on mount to sync state
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname]);
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // Show button only when user has scrolled at least a little
+  const visible = scrollProgress > 1;
+
   if (!visible) return null;
+
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - scrollProgress / 100);
 
   return (
     <button
@@ -283,20 +201,60 @@ function ScrollToTopButton() {
       data-ocid="scroll_to_top.button"
       onClick={scrollToTop}
       aria-label="Scroll to top"
-      className="fixed z-50 flex items-center justify-center rounded-full shadow-lg transition-all hover:scale-110 active:scale-95"
+      className="fixed z-50 flex items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95"
       style={{
         bottom: "24px",
         right: "24px",
-        width: "48px",
-        height: "48px",
-        backgroundColor: "oklch(0.42 0.08 155)",
-        color: "#ffffff",
+        width: "52px",
+        height: "52px",
+        backgroundColor: "oklch(0.97 0.01 80)",
+        color: "oklch(0.28 0.02 60)",
         border: "none",
         cursor: "pointer",
-        boxShadow: "0 4px 16px oklch(0.42 0.08 155 / 0.35)",
+        boxShadow: "0 4px 16px oklch(0.3 0.02 60 / 0.18)",
+        padding: 0,
       }}
     >
-      <ChevronUp className="w-5 h-5" />
+      {/* SVG progress ring */}
+      <svg
+        width="52"
+        height="52"
+        viewBox="0 0 52 52"
+        aria-hidden="true"
+        style={{ position: "absolute", top: 0, left: 0 }}
+      >
+        {/* Background ring */}
+        <circle
+          cx="26"
+          cy="26"
+          r={radius}
+          fill="none"
+          stroke="oklch(0.88 0.02 60)"
+          strokeWidth="2.5"
+        />
+        {/* Progress ring */}
+        <circle
+          cx="26"
+          cy="26"
+          r={radius}
+          fill="none"
+          stroke="oklch(0.42 0.08 155)"
+          strokeWidth="2.5"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          style={{
+            transformOrigin: "26px 26px",
+            transform: "rotate(-90deg)",
+            transition: "stroke-dashoffset 0.1s ease",
+          }}
+        />
+      </svg>
+      {/* Up arrow */}
+      <ChevronUp
+        className="w-5 h-5"
+        style={{ position: "relative", zIndex: 1 }}
+      />
     </button>
   );
 }
@@ -373,9 +331,9 @@ function Header() {
           style={{ background: "transparent", border: "none", padding: 0 }}
         >
           <img
-            src="/assets/trevialogo-019d5318-0039-779f-9846-b7a8850c7366.png"
+            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
             alt="Trevia Projects"
-            style={{ height: "44px", width: "auto", objectFit: "contain" }}
+            style={{ height: "64px", width: "auto", objectFit: "contain" }}
           />
         </button>
 
@@ -502,11 +460,11 @@ function Header() {
               <div className="flex flex-col h-full">
                 {/* Sheet header */}
                 <div
-                  className="flex items-center justify-between px-6 py-4"
+                  className="flex items-center px-6 py-4"
                   style={{ borderBottom: "1px solid oklch(0.90 0.01 80)" }}
                 >
                   <img
-                    src="/assets/trevialogo-019d5318-0039-779f-9846-b7a8850c7366.png"
+                    src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
                     alt="Trevia Projects"
                     style={{
                       height: "36px",
@@ -514,17 +472,6 @@ function Header() {
                       objectFit: "contain",
                     }}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center w-8 h-8 rounded transition-opacity hover:opacity-70"
-                    aria-label="Close menu"
-                  >
-                    <X
-                      className="w-4 h-4"
-                      style={{ color: "oklch(0.55 0.02 60)" }}
-                    />
-                  </button>
                 </div>
 
                 {/* Nav links */}
@@ -556,6 +503,38 @@ function Header() {
                     </button>
                   ))}
                 </nav>
+
+                {/* Mobile Search */}
+                <div
+                  className="px-6 py-4"
+                  style={{ borderTop: "1px solid oklch(0.90 0.01 80)" }}
+                >
+                  <div className="relative flex items-center">
+                    <Search
+                      className="absolute left-3 w-4 h-4"
+                      style={{ color: "oklch(0.65 0.02 60)" }}
+                    />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                          setSearchQuery("");
+                        }
+                      }}
+                      placeholder="Search..."
+                      className="w-full font-poppins rounded-full pl-10 pr-4 py-2.5 outline-none transition-all focus:ring-1"
+                      style={{
+                        fontSize: "13px",
+                        border: "1px solid oklch(0.85 0.02 60)",
+                        backgroundColor: "oklch(0.97 0.01 80)",
+                        color: "oklch(0.22 0.01 60)",
+                        letterSpacing: "0.02em",
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -582,13 +561,13 @@ function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-3">
               <img
-                src="/assets/trevialogo-019d5318-0039-779f-9846-b7a8850c7366.png"
+                src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
                 alt="Trevia Projects"
                 style={{
-                  height: "36px",
+                  height: "56px",
                   width: "auto",
                   objectFit: "contain",
-                  filter: "brightness(0) invert(1) opacity(0.85)",
+                  filter: "brightness(0) invert(1) opacity(0.95)",
                 }}
               />
             </div>
@@ -625,9 +604,19 @@ function Footer() {
               <li>
                 <button
                   type="button"
+                  onClick={() => navigate({ to: "/projects" })}
                   className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
                 >
-                  Careers
+                  Projects
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/admin" })}
+                  className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+                >
+                  Admin
                 </button>
               </li>
             </ul>
@@ -640,11 +629,11 @@ function Footer() {
             </h4>
             <ul className="space-y-2">
               {[
-                "Exterior Construction",
+                "Construction Services",
                 "Interior Construction",
                 "Architectural Planning",
-                "Building Construction",
-                "Road & Infrastructure",
+                "Waterproofing Solutions",
+                "Renovation & Remodeling",
               ].map((item) => (
                 <li key={item}>
                   <button
@@ -718,7 +707,7 @@ function HeroSection() {
         className="font-cormorant font-bold uppercase tracking-[0.12em] text-foreground leading-none"
         style={{ fontSize: "clamp(28px, 7vw, 96px)" }}
       >
-        treviaprojects
+        trevia projects
       </h1>
 
       <div
@@ -766,36 +755,19 @@ function HeroSection() {
 }
 
 // ---------------------------------------------------------------------------
-// OurServices section (with optional slider + view all)
+// OurServices section — shows all 5 services, no pagination slider
 // ---------------------------------------------------------------------------
 function OurServicesSection({
   showViewAll = false,
 }: { showViewAll?: boolean }) {
   const navigate = useNavigate();
-  const [startIndex, setStartIndex] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1024,
-  );
-  useEffect(() => {
-    const handler = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, []);
-  const visibleCount = windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 3;
-  const canGoLeft = startIndex > 0;
-  const canGoRight = startIndex + visibleCount < SERVICES.length;
+  const firstRow = SERVICES.slice(0, 3);
+  const secondRow = SERVICES.slice(3);
 
-  function goLeft() {
-    setStartIndex((prev) => Math.max(0, prev - 1));
+  function handleServiceClick(service: (typeof SERVICES)[number]) {
+    selectedService = service;
+    navigate({ to: "/service-detail" });
   }
-
-  function goRight() {
-    setStartIndex((prev) =>
-      Math.max(0, Math.min(SERVICES.length - visibleCount, prev + 1)),
-    );
-  }
-
-  const visibleServices = SERVICES.slice(startIndex, startIndex + visibleCount);
 
   return (
     <section
@@ -825,13 +797,18 @@ function OurServicesSection({
           />
         </div>
 
-        <div className="relative">
+        <div className="flex flex-col gap-6">
+          {/* First row: 3 services */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleServices.map((service, i) => (
-              <article
+            {firstRow.map((service, i) => (
+              <button
+                type="button"
                 key={service.title}
-                data-ocid={`services.item.${startIndex + i + 1}`}
-                className="rounded-xl overflow-hidden shadow-md min-w-0"
+                data-ocid={`services.item.${i + 1}`}
+                className="rounded-xl overflow-hidden shadow-md min-w-0 cursor-pointer text-left w-full p-0"
+                style={{ border: "none", background: "transparent" }}
+                aria-label={`View details for ${service.title}`}
+                onClick={() => handleServiceClick(service)}
               >
                 <div
                   className="overflow-hidden"
@@ -869,73 +846,96 @@ function OurServicesSection({
                     {service.desc}
                   </p>
                 </div>
-              </article>
+              </button>
             ))}
           </div>
 
-          {/* Arrow buttons */}
-          <div className="flex justify-center mt-6 gap-2">
-            <button
-              type="button"
-              data-ocid="services.pagination_prev"
-              onClick={goLeft}
-              disabled={!canGoLeft}
-              aria-label="Previous"
-              className="w-8 h-8 flex items-center justify-center rounded-full border transition-all disabled:opacity-30"
-              style={{
-                borderColor: "oklch(0.42 0.08 155)",
-                color: "oklch(0.42 0.08 155)",
-                background: "transparent",
-              }}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              data-ocid="services.pagination_next"
-              onClick={goRight}
-              disabled={!canGoRight}
-              aria-label="Next"
-              className="w-8 h-8 flex items-center justify-center rounded-full border transition-all disabled:opacity-30"
-              style={{
-                borderColor: "oklch(0.42 0.08 155)",
-                color: "oklch(0.42 0.08 155)",
-                background: "transparent",
-              }}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {showViewAll && (
-            <div className="flex justify-center mt-8">
+          {/* Second row: 2 services centered */}
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            {secondRow.map((service, i) => (
               <button
                 type="button"
-                data-ocid="services.view_all.button"
-                onClick={() => navigate({ to: "/services" })}
-                className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+                key={service.title}
+                data-ocid={`services.item.${firstRow.length + i + 1}`}
+                className="rounded-xl overflow-hidden shadow-md cursor-pointer text-left p-0 w-full sm:w-auto"
                 style={{
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  color: "oklch(0.42 0.08 155)",
-                  border: "1px solid oklch(0.42 0.08 155)",
-                  borderRadius: "2px",
-                  padding: "10px 32px",
+                  border: "none",
                   background: "transparent",
-                  cursor: "pointer",
-                  minHeight: "44px",
+                  maxWidth: "400px",
+                  flexShrink: 0,
+                  flexBasis: "calc(33.333% - 8px)",
                 }}
+                aria-label={`View details for ${service.title}`}
+                onClick={() => handleServiceClick(service)}
               >
-                View All Services
+                <div
+                  className="overflow-hidden"
+                  style={{ aspectRatio: "16/9" }}
+                >
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+                <div
+                  className="p-6"
+                  style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
+                >
+                  <h3
+                    className="font-cormorant italic"
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 600,
+                      color: "#ffffff",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {service.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "rgba(255,255,255,0.82)",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {service.desc}
+                  </p>
+                </div>
               </button>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
+
+        {showViewAll && (
+          <div className="flex justify-center mt-8">
+            <button
+              type="button"
+              data-ocid="services.view_all.button"
+              onClick={() => navigate({ to: "/services" })}
+              className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "oklch(0.42 0.08 155)",
+                border: "1px solid oklch(0.42 0.08 155)",
+                borderRadius: "2px",
+                padding: "10px 32px",
+                background: "transparent",
+                cursor: "pointer",
+                minHeight: "44px",
+              }}
+            >
+              View All Services
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
 }
-
 // ---------------------------------------------------------------------------
 // OurProducts section
 // ---------------------------------------------------------------------------
@@ -1125,17 +1125,464 @@ function OurProductsSection({
 }
 
 // ---------------------------------------------------------------------------
+// PROJECTS data
+// ---------------------------------------------------------------------------
+const PROJECTS = [
+  {
+    id: 1,
+    title: "Greenfield Villa",
+    type: "Residential Villa",
+    location: "Guntur, AP",
+    status: "Completed",
+    year: "Completed 2024",
+    area: "4,200 sq.ft",
+    desc: "Luxury villa with modern architecture, premium interiors, and a manicured landscaped garden — crafted for refined living.",
+    image: "/assets/generated/project-villa-completed.dim_800x500.jpg",
+  },
+  {
+    id: 2,
+    title: "Horizon Office Complex",
+    type: "Commercial Building",
+    location: "Vijayawada, AP",
+    status: "Completed",
+    year: "Completed 2023",
+    area: "12,000 sq.ft",
+    desc: "Contemporary office complex with glass facade, modern amenities, and energy-efficient design built for thriving businesses.",
+    image: "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+  },
+  {
+    id: 3,
+    title: "Skyline Residency",
+    type: "Apartment Complex",
+    location: "Guntur, AP",
+    status: "Completed",
+    year: "Completed 2024",
+    area: "24 Units",
+    desc: "Premium 24-unit apartment complex with modern amenities, underground parking, and a stunning rooftop terrace.",
+    image: "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+  },
+  {
+    id: 4,
+    title: "Palm Grove Estate",
+    type: "Luxury Villa",
+    location: "Guntur, AP",
+    status: "Ongoing",
+    year: "Est. Dec 2025",
+    area: "5,500 sq.ft",
+    desc: "5,500 sq.ft premium villa with pool, smart home integration, and contemporary elevation design for a discerning client.",
+    image: "/assets/generated/project-villa-ongoing.dim_800x500.jpg",
+  },
+  {
+    id: 5,
+    title: "Central Square Mall",
+    type: "Commercial Complex",
+    location: "Vijayawada, AP",
+    status: "Ongoing",
+    year: "Est. Mar 2026",
+    area: "45,000 sq.ft",
+    desc: "45,000 sq.ft multi-level commercial complex with retail, office, and food court spaces — a landmark in the making.",
+    image: "/assets/generated/project-commercial-ongoing.dim_800x500.jpg",
+  },
+  {
+    id: 6,
+    title: "Modern Haven Renovation",
+    type: "Interior Renovation",
+    location: "Hyderabad, TS",
+    status: "Ongoing",
+    year: "Est. Jun 2025",
+    area: "3,200 sq.ft",
+    desc: "Complete home transformation spanning 3,200 sq.ft — modular kitchen, premium flooring, false ceilings, and modern interiors.",
+    image: "/assets/generated/project-renovation-ongoing.dim_800x500.jpg",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// ProjectsSection (Home page section)
+// ---------------------------------------------------------------------------
+function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
+  const navigate = useNavigate();
+
+  return (
+    <section
+      data-ocid="projects.section"
+      id="projects"
+      className="w-full py-20 px-4 sm:px-6"
+      style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-4">
+          <h2
+            className="font-cormorant uppercase tracking-[0.18em]"
+            style={{
+              fontSize: "clamp(28px, 4vw, 42px)",
+              fontWeight: 600,
+              color: "oklch(0.22 0.01 60)",
+            }}
+          >
+            Our Projects
+          </h2>
+          <p
+            className="font-poppins mt-2"
+            style={{
+              fontSize: "13px",
+              color: "oklch(0.52 0.04 60)",
+              letterSpacing: "0.08em",
+            }}
+          >
+            Completed &amp; Ongoing Developments
+          </p>
+          <div
+            className="mx-auto mt-3 h-px"
+            style={{ maxWidth: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+          {PROJECTS.map((project, i) => (
+            <div
+              key={project.id}
+              data-ocid={`projects.item.${i + 1}`}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm"
+              style={{
+                border: "1px solid oklch(0.92 0.01 80)",
+                transition:
+                  "transform 220ms ease-out, box-shadow 220ms ease-out",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(-4px)";
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 8px 32px oklch(0.3 0.02 60 / 0.12)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(0)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "";
+              }}
+            >
+              <div
+                className="relative overflow-hidden"
+                style={{ aspectRatio: "16/9" }}
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                />
+                <span
+                  className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                  style={{
+                    letterSpacing: "0.08em",
+                    backgroundColor:
+                      project.status === "Completed"
+                        ? "oklch(0.45 0.14 155)"
+                        : "oklch(0.60 0.18 55)",
+                  }}
+                >
+                  {project.status}
+                </span>
+              </div>
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3
+                    className="font-cormorant font-semibold"
+                    style={{
+                      fontSize: "20px",
+                      color: "oklch(0.18 0.01 60)",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {project.title}
+                  </h3>
+                  <span
+                    className="font-poppins shrink-0"
+                    style={{
+                      fontSize: "11px",
+                      color: "oklch(0.55 0.06 55)",
+                      fontWeight: 500,
+                      marginTop: "3px",
+                    }}
+                  >
+                    {project.year}
+                  </span>
+                </div>
+                <p
+                  className="font-poppins"
+                  style={{
+                    fontSize: "12px",
+                    color: "oklch(0.55 0.02 60)",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {project.type} · {project.location}
+                </p>
+                <p
+                  className="font-poppins"
+                  style={{
+                    fontSize: "13px",
+                    color: "oklch(0.40 0.02 60)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {project.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {showViewAll && (
+          <div className="flex justify-center mt-10">
+            <button
+              type="button"
+              data-ocid="projects.view_all.button"
+              onClick={() => navigate({ to: "/projects" })}
+              className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "oklch(0.52 0.09 50)",
+                border: "1px solid oklch(0.52 0.09 50)",
+                borderRadius: "2px",
+                padding: "10px 32px",
+                background: "transparent",
+                cursor: "pointer",
+                minHeight: "44px",
+              }}
+            >
+              View All Projects
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ProjectsPage
+// ---------------------------------------------------------------------------
+function ProjectsPageComponent() {
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState<"All" | "Completed" | "Ongoing">("All");
+
+  const filtered =
+    filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.status === filter);
+
+  return (
+    <PageShell>
+      <section
+        data-ocid="projects.page"
+        className="w-full pt-14 pb-2 px-4 sm:px-6"
+        style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
+      >
+        <div className="max-w-7xl mx-auto text-center">
+          <p
+            className="font-poppins uppercase tracking-[0.22em] mb-2"
+            style={{ fontSize: "11px", color: "oklch(0.65 0.02 60)" }}
+          >
+            Our Work
+          </p>
+          <h1
+            className="font-cormorant"
+            style={{
+              fontSize: "clamp(32px, 5vw, 56px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Our Projects
+          </h1>
+          <div
+            className="mx-auto mt-3 h-px"
+            style={{ maxWidth: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+          />
+        </div>
+      </section>
+
+      <section
+        className="w-full py-10 px-4 sm:px-6"
+        style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Filter tabs */}
+          <div
+            className="flex justify-center gap-3 mb-10"
+            data-ocid="projects.filter.tab"
+          >
+            {(["All", "Completed", "Ongoing"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setFilter(tab)}
+                className="font-poppins uppercase tracking-widest transition-all"
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  padding: "8px 24px",
+                  borderRadius: "2px",
+                  cursor: "pointer",
+                  border:
+                    filter === tab
+                      ? "1px solid oklch(0.52 0.09 50)"
+                      : "1px solid oklch(0.82 0.02 60)",
+                  backgroundColor:
+                    filter === tab ? "oklch(0.52 0.09 50)" : "transparent",
+                  color: filter === tab ? "white" : "oklch(0.52 0.04 60)",
+                }}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((project, i) => (
+              <div
+                key={project.id}
+                data-ocid={`projects.item.${i + 1}`}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm"
+                style={{
+                  border: "1px solid oklch(0.92 0.01 80)",
+                  transition:
+                    "transform 220ms ease-out, box-shadow 220ms ease-out",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(-4px)";
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 8px 32px oklch(0.3 0.02 60 / 0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "";
+                }}
+              >
+                <div
+                  className="relative overflow-hidden"
+                  style={{ aspectRatio: "16/9" }}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    loading="lazy"
+                  />
+                  <span
+                    className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                    style={{
+                      letterSpacing: "0.08em",
+                      backgroundColor:
+                        project.status === "Completed"
+                          ? "oklch(0.45 0.14 155)"
+                          : "oklch(0.60 0.18 55)",
+                    }}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h3
+                      className="font-cormorant font-semibold"
+                      style={{
+                        fontSize: "20px",
+                        color: "oklch(0.18 0.01 60)",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {project.title}
+                    </h3>
+                    <span
+                      className="font-poppins shrink-0"
+                      style={{
+                        fontSize: "11px",
+                        color: "oklch(0.55 0.06 55)",
+                        fontWeight: 500,
+                        marginTop: "3px",
+                      }}
+                    >
+                      {project.year}
+                    </span>
+                  </div>
+                  <p
+                    className="font-poppins"
+                    style={{
+                      fontSize: "12px",
+                      color: "oklch(0.55 0.02 60)",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {project.type} · {project.location}
+                  </p>
+                  <p
+                    className="font-poppins"
+                    style={{
+                      fontSize: "13px",
+                      color: "oklch(0.40 0.02 60)",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {project.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filtered.length === 0 && (
+            <div data-ocid="projects.empty_state" className="text-center py-20">
+              <p
+                className="font-poppins"
+                style={{ color: "oklch(0.55 0.02 60)", fontSize: "15px" }}
+              >
+                No projects found.
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-center mt-10">
+            <button
+              type="button"
+              data-ocid="projects.back.button"
+              onClick={() => navigate({ to: "/" })}
+              className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "oklch(0.52 0.09 50)",
+                border: "1px solid oklch(0.52 0.09 50)",
+                borderRadius: "2px",
+                padding: "10px 32px",
+                background: "transparent",
+                cursor: "pointer",
+                minHeight: "44px",
+              }}
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </section>
+    </PageShell>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // AboutUs section
 // ---------------------------------------------------------------------------
 function AboutUsSection() {
   const navigate = useNavigate();
 
   const serviceLinks = [
-    "Exterior Construction",
+    "Construction Services",
     "Architectural Planning",
-    "Building Construction",
+    "Waterproofing Solutions",
     "Interior Construction",
-    "Road & Infrastructure Works",
+    "Renovation & Remodeling",
   ];
 
   return (
@@ -1160,17 +1607,17 @@ function AboutUsSection() {
         }}
       />
 
-      <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-        {/* Left: text content */}
-        <div className="flex-1 text-center md:text-left">
+      <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+        {/* Text content: left side */}
+        <div className="flex-1 flex flex-col items-start text-left">
           <h2
             className="font-cormorant"
             style={{
-              fontSize: "clamp(36px, 5vw, 56px)",
+              fontSize: "clamp(32px, 5vw, 52px)",
               fontWeight: 600,
               color: "oklch(0.18 0.01 60)",
               letterSpacing: "0.04em",
-              marginBottom: "28px",
+              marginBottom: "24px",
             }}
           >
             Trevia Projects
@@ -1182,7 +1629,7 @@ function AboutUsSection() {
               fontSize: "15px",
               color: "oklch(0.38 0.02 60)",
               lineHeight: 1.85,
-              marginBottom: "20px",
+              marginBottom: "18px",
             }}
           >
             Trevia Projects is a trusted construction company delivering
@@ -1197,7 +1644,7 @@ function AboutUsSection() {
               fontSize: "15px",
               color: "oklch(0.38 0.02 60)",
               lineHeight: 1.85,
-              marginBottom: "36px",
+              marginBottom: "32px",
             }}
           >
             With a strong focus on quality, safety, and innovation, we ensure
@@ -1211,14 +1658,14 @@ function AboutUsSection() {
             style={{
               fontSize: "18px",
               color: "oklch(0.38 0.02 60)",
-              marginBottom: "20px",
+              marginBottom: "18px",
               letterSpacing: "0.04em",
             }}
           >
             Explore Our Services
           </p>
 
-          <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-3 mb-16">
+          <div className="flex flex-wrap gap-x-5 gap-y-3 mb-12">
             {serviceLinks.map((link) => (
               <button
                 key={link}
@@ -1243,7 +1690,7 @@ function AboutUsSection() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center md:justify-start gap-3">
+          <div className="flex items-center gap-3">
             <div
               className="h-px flex-1"
               style={{
@@ -1264,16 +1711,17 @@ function AboutUsSection() {
           </div>
         </div>
 
-        {/* Right: Trevia logo */}
-        <div className="flex-shrink-0 w-64 md:w-80 lg:w-96 flex items-center justify-center">
+        {/* Logo: right side, centered vertically */}
+        <div className="flex-shrink-0 flex items-center justify-center">
           <img
-            src="/assets/trevialogo-019d5318-0039-779f-9846-b7a8850c7366.png"
+            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
             alt="Trevia Projects Logo"
             style={{
+              maxWidth: "520px",
               width: "100%",
               height: "auto",
               objectFit: "contain",
-              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.18))",
+              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.22))",
             }}
           />
         </div>
@@ -1309,6 +1757,26 @@ function ContactUsSection() {
     e.preventDefault();
     setIsSubmitting(true);
     setTimeout(() => {
+      // Save to localStorage
+      try {
+        const submissions = JSON.parse(
+          localStorage.getItem("trevia_contact_submissions") || "[]",
+        );
+        submissions.push({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          interested: formData.interested,
+          message: formData.message,
+          date: new Date().toISOString(),
+        });
+        localStorage.setItem(
+          "trevia_contact_submissions",
+          JSON.stringify(submissions),
+        );
+      } catch (_e) {
+        /* ignore */
+      }
       setIsSubmitting(false);
       setSubmitted(true);
       toast.success("Message sent! We'll get back to you soon.");
@@ -1594,14 +2062,16 @@ function ContactUsSection() {
                     }}
                   >
                     <option value="">Select a service</option>
-                    <option value="exterior">Exterior Construction</option>
+                    <option value="construction">Construction Services</option>
                     <option value="interior">Interior Construction</option>
                     <option value="architectural">
                       Architectural Planning
                     </option>
-                    <option value="building">Building Construction</option>
-                    <option value="road">
-                      Road &amp; Infrastructure Works
+                    <option value="waterproofing">
+                      Waterproofing Solutions
+                    </option>
+                    <option value="renovation">
+                      Renovation &amp; Remodeling
                     </option>
                   </select>
                 </div>
@@ -1679,388 +2149,6 @@ function ContactUsSection() {
 }
 
 // ---------------------------------------------------------------------------
-// Project Form Dialog
-// ---------------------------------------------------------------------------
-interface ProjectFormDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialData?: ProjectFormData;
-  onSubmit: (data: ProjectFormData) => void;
-  isPending: boolean;
-  mode: "add" | "edit";
-}
-
-function ProjectFormDialog({
-  open,
-  onOpenChange,
-  initialData = EMPTY_FORM,
-  onSubmit,
-  isPending,
-  mode,
-}: ProjectFormDialogProps) {
-  const [form, setForm] = useState<ProjectFormData>(initialData);
-
-  const handleOpenChange = useCallback(
-    (isOpen: boolean) => {
-      if (isOpen) setForm(initialData);
-      onOpenChange(isOpen);
-    },
-    [initialData, onOpenChange],
-  );
-
-  const set =
-    (field: keyof ProjectFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-    };
-
-  const ongoingNum = Number(form.ongoingPercentage);
-  const completedNum = Number(form.completedPercentage);
-  const sumWarning = ongoingNum + completedNum !== 100;
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSubmit(form);
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        data-ocid="project.dialog"
-        className="max-w-lg font-poppins"
-      >
-        <DialogHeader>
-          <DialogTitle className="text-foreground font-bold">
-            {mode === "add" ? "Add New Project" : "Edit Project"}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 space-y-1.5">
-              <Label
-                htmlFor="title"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                Project Title
-              </Label>
-              <Input
-                data-ocid="project.input"
-                id="title"
-                placeholder="e.g. Luxury Villas — Ontario"
-                value={form.title}
-                onChange={set("title")}
-                required
-              />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label
-                htmlFor="location"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                Location
-              </Label>
-              <Input
-                id="location"
-                placeholder="e.g. Toronto"
-                value={form.location}
-                onChange={set("location")}
-                required
-              />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label
-                htmlFor="imageUrl"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                Image URL
-              </Label>
-              <Input
-                id="imageUrl"
-                placeholder="https://..."
-                value={form.imageUrl}
-                onChange={set("imageUrl")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="forSaleUnits"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                For Sale Units
-              </Label>
-              <Input
-                id="forSaleUnits"
-                type="number"
-                min="0"
-                value={form.forSaleUnits}
-                onChange={set("forSaleUnits")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="forRentUnits"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                For Rent Units
-              </Label>
-              <Input
-                id="forRentUnits"
-                type="number"
-                min="0"
-                value={form.forRentUnits}
-                onChange={set("forRentUnits")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="ongoingPercentage"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                Ongoing %
-              </Label>
-              <Input
-                id="ongoingPercentage"
-                type="number"
-                min="0"
-                max="100"
-                value={form.ongoingPercentage}
-                onChange={set("ongoingPercentage")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="completedPercentage"
-                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                Completed %
-              </Label>
-              <Input
-                id="completedPercentage"
-                type="number"
-                min="0"
-                max="100"
-                value={form.completedPercentage}
-                onChange={set("completedPercentage")}
-              />
-            </div>
-          </div>
-
-          {sumWarning && (
-            <p
-              data-ocid="project.error_state"
-              className="text-xs text-destructive font-medium"
-            >
-              ⚠ Ongoing + Completed should equal 100 (currently{" "}
-              {ongoingNum + completedNum})
-            </p>
-          )}
-
-          <DialogFooter className="pt-2">
-            <Button
-              data-ocid="project.cancel_button"
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              data-ocid="project.submit_button"
-              type="submit"
-              disabled={isPending}
-              className="text-white"
-              style={{ backgroundColor: "oklch(0.52 0.09 50)" }}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : mode === "add" ? (
-                "Add Project"
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Admin View
-// ---------------------------------------------------------------------------
-interface AdminViewProps {
-  projects: Array<[ProjectId, Project]>;
-  isLoading: boolean;
-  onAdd: () => void;
-  onEdit: (id: bigint, project: Project) => void;
-  onDelete: (id: bigint) => void;
-}
-
-function AdminView({
-  projects,
-  isLoading,
-  onAdd,
-  onEdit,
-  onDelete,
-}: AdminViewProps) {
-  return (
-    <section data-ocid="admin.section">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Admin Dashboard
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage all Trevia Projects from here
-          </p>
-        </div>
-        <Button
-          data-ocid="admin.add.primary_button"
-          onClick={onAdd}
-          className="text-white font-semibold text-xs tracking-wide shrink-0"
-          style={{ backgroundColor: "oklch(0.52 0.09 50)" }}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Project
-        </Button>
-      </div>
-
-      <div className="bg-card rounded-xl border border-border shadow-xs overflow-x-auto">
-        {isLoading ? (
-          <div data-ocid="admin.loading_state" className="p-6 space-y-3">
-            {["a", "b", "c", "d"].map((sk) => (
-              <Skeleton key={sk} className="h-10 w-full" />
-            ))}
-          </div>
-        ) : projects.length === 0 ? (
-          <div
-            data-ocid="admin.empty_state"
-            className="flex flex-col items-center justify-center py-16 text-center"
-          >
-            <Building2 className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
-            <p className="text-sm font-semibold text-muted-foreground">
-              No projects yet
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Click &quot;Add New Project&quot; to get started.
-            </p>
-          </div>
-        ) : (
-          <Table data-ocid="admin.table">
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[220px]">
-                  Title
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Location
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-center">
-                  For Sale
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-center">
-                  For Rent
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-center">
-                  Ongoing
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-center">
-                  Completed
-                </TableHead>
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-right">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map(([id, project], index) => (
-                <TableRow
-                  key={String(id)}
-                  data-ocid={`admin.project.row.${index + 1}`}
-                  className="hover:bg-muted/30 transition-colors"
-                >
-                  <TableCell className="font-semibold text-sm text-foreground">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{
-                          backgroundColor: "oklch(0.52 0.09 50 / 0.3)",
-                        }}
-                      />
-                      <span className="truncate max-w-[180px]">
-                        {project.title}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {project.location}
-                  </TableCell>
-                  <TableCell className="text-center text-sm">
-                    {Number(project.forSaleUnits).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-center text-sm">
-                    {Number(project.forRentUnits).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className="text-xs"
-                      style={{
-                        color: "oklch(0.59 0.22 27)",
-                        borderColor: "oklch(0.59 0.22 27 / 0.3)",
-                      }}
-                    >
-                      {Number(project.ongoingPercentage)}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className="text-xs"
-                      style={{
-                        color: "oklch(0.66 0.18 155)",
-                        borderColor: "oklch(0.66 0.18 155 / 0.3)",
-                      }}
-                    >
-                      {Number(project.completedPercentage)}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        data-ocid={`admin.project.edit_button.${index + 1}`}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(id, project)}
-                        className="h-7 w-7 p-0 hover:bg-primary/10"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        data-ocid={`admin.project.delete_button.${index + 1}`}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDelete(id)}
-                        className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
-    </section>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Page shell (header + children + footer + scroll-to-top)
 // ---------------------------------------------------------------------------
@@ -2070,7 +2158,6 @@ function PageShell({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <ScrollToTopButton />
     </div>
   );
 }
@@ -2085,6 +2172,7 @@ function HomePageComponent() {
         <HeroSection />
         <OurServicesSection showViewAll />
         <OurProductsSection showViewAll />
+        <ProjectsSection showViewAll />
         <AboutUsSection />
       </PageShell>
     </div>
@@ -2137,6 +2225,13 @@ function ProductsPageComponent() {
 }
 
 function ServicesPageComponent() {
+  const navigate = useNavigate();
+
+  function handleServiceClick(service: (typeof SERVICES)[number]) {
+    selectedService = service;
+    navigate({ to: "/service-detail" });
+  }
+
   return (
     <PageShell>
       <section
@@ -2182,244 +2277,879 @@ function ServicesPageComponent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((service, i) => (
-              <article
-                key={service.title}
-                data-ocid={`services.item.${i + 1}`}
-                className="rounded-xl overflow-hidden shadow-md min-w-0"
-              >
-                <div
-                  className="overflow-hidden"
-                  style={{ aspectRatio: "16/9" }}
+          <div className="flex flex-col gap-6">
+            {/* First row: 3 services */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {SERVICES.slice(0, 3).map((service, i) => (
+                <button
+                  type="button"
+                  key={service.title}
+                  data-ocid={`services.item.${i + 1}`}
+                  className="rounded-xl overflow-hidden shadow-md min-w-0 cursor-pointer text-left w-full p-0"
+                  style={{ border: "none", background: "transparent" }}
+                  aria-label={`View details for ${service.title}`}
+                  onClick={() => handleServiceClick(service)}
                 >
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <div
-                  className="p-6"
-                  style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
+                  <div
+                    className="overflow-hidden"
+                    style={{ aspectRatio: "16/9" }}
+                  >
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div
+                    className="p-6"
+                    style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
+                  >
+                    <h3
+                      className="font-cormorant italic"
+                      style={{
+                        fontSize: "22px",
+                        fontWeight: 600,
+                        color: "#ffffff",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      {service.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "rgba(255,255,255,0.82)",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {service.desc}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Second row: 2 services centered */}
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              {SERVICES.slice(3).map((service, i) => (
+                <button
+                  type="button"
+                  key={service.title}
+                  data-ocid={`services.item.${3 + i + 1}`}
+                  className="rounded-xl overflow-hidden shadow-md cursor-pointer text-left p-0 w-full sm:w-auto"
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    maxWidth: "400px",
+                    flexShrink: 0,
+                    flexBasis: "calc(33.333% - 8px)",
+                  }}
+                  aria-label={`View details for ${service.title}`}
+                  onClick={() => handleServiceClick(service)}
                 >
-                  <h3
-                    className="font-cormorant italic"
-                    style={{
-                      fontSize: "22px",
-                      fontWeight: 600,
-                      color: "#ffffff",
-                      marginBottom: "10px",
-                    }}
+                  <div
+                    className="overflow-hidden"
+                    style={{ aspectRatio: "16/9" }}
                   >
-                    {service.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "rgba(255,255,255,0.82)",
-                      lineHeight: 1.65,
-                    }}
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div
+                    className="p-6"
+                    style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
                   >
-                    {service.desc}
-                  </p>
-                </div>
-              </article>
-            ))}
+                    <h3
+                      className="font-cormorant italic"
+                      style={{
+                        fontSize: "22px",
+                        fontWeight: 600,
+                        color: "#ffffff",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      {service.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "rgba(255,255,255,0.82)",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {service.desc}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
     </PageShell>
   );
 }
-
+// Service pricing data
 // ---------------------------------------------------------------------------
-// Admin Page — open access, no login required
-// ---------------------------------------------------------------------------
-function AdminPageComponent() {
-  const { actor, isFetching: actorLoading } = useActor();
-  const queryClient = useQueryClient();
-
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<bigint | null>(null);
-  const [editTarget, setEditTarget] = useState<{
-    id: bigint;
-    data: ProjectFormData;
-  } | null>(null);
-
-  const { data: backendProjects, isLoading: projectsLoading } = useQuery<
-    Array<[ProjectId, Project]>
-  >({
-    queryKey: ["admin-projects", actor ? "actor" : "no-actor"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getAllProjects();
-    },
-    enabled: !!actor && !actorLoading,
-  });
-
-  const allProjects: Array<[ProjectId, Project]> =
-    backendProjects && backendProjects.length > 0
-      ? backendProjects
-      : SEED_PROJECTS.map(({ id, data }) => [id, data]);
-
-  const refetch = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["admin-projects"] });
-  }, [queryClient]);
-
-  const addMutation = useMutation({
-    mutationFn: async (data: ProjectFormData) => {
-      if (!actor) throw new Error("Not connected");
-      const project: Project = {
-        title: data.title,
-        location: data.location,
-        imageUrl: data.imageUrl,
-        forSaleUnits: BigInt(data.forSaleUnits || 0),
-        forRentUnits: BigInt(data.forRentUnits || 0),
-        ongoingPercentage: BigInt(data.ongoingPercentage || 0),
-        completedPercentage: BigInt(data.completedPercentage || 0),
-      };
-      return actor.addProject(project);
-    },
-    onSuccess: () => {
-      toast.success("Project added successfully");
-      setAddDialogOpen(false);
-      refetch();
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to add project");
-    },
-  });
-
-  const editMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: bigint; data: ProjectFormData }) => {
-      if (!actor) throw new Error("Not connected");
-      const project: Project = {
-        title: data.title,
-        location: data.location,
-        imageUrl: data.imageUrl,
-        forSaleUnits: BigInt(data.forSaleUnits || 0),
-        forRentUnits: BigInt(data.forRentUnits || 0),
-        ongoingPercentage: BigInt(data.ongoingPercentage || 0),
-        completedPercentage: BigInt(data.completedPercentage || 0),
-      };
-      return actor.editProject(id, project);
-    },
-    onSuccess: () => {
-      toast.success("Project updated successfully");
-      setEditDialogOpen(false);
-      setEditTarget(null);
-      refetch();
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to update project");
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: bigint) => {
-      if (!actor) throw new Error("Not connected");
-      return actor.deleteProject(id);
-    },
-    onSuccess: () => {
-      toast.success("Project deleted");
-      setDeleteConfirmId(null);
-      refetch();
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete project");
-    },
-  });
-
-  function openEdit(id: bigint, project: Project) {
-    setEditTarget({
-      id,
-      data: {
-        title: project.title,
-        location: project.location,
-        imageUrl: project.imageUrl,
-        forSaleUnits: String(project.forSaleUnits),
-        forRentUnits: String(project.forRentUnits),
-        ongoingPercentage: String(project.ongoingPercentage),
-        completedPercentage: String(project.completedPercentage),
+const SERVICE_PRICING: Record<
+  string,
+  {
+    tagline: string;
+    areas?: string[];
+    plans: Array<{
+      name: string;
+      price: string;
+      features: string[];
+      highlight?: boolean;
+      note?: string;
+    }>;
+  }
+> = {
+  "Waterproofing Solutions": {
+    tagline:
+      "We provide advanced waterproofing solutions to protect your building from leakage, dampness, and water damage. Our services ensure long-lasting protection and improved building life.",
+    areas: [
+      "Roof & Terrace",
+      "Bathrooms & Kitchens",
+      "Basements",
+      "External Walls",
+      "Water Tanks",
+    ],
+    plans: [
+      {
+        name: "Standard Plan",
+        price: "₹79 / sq.ft",
+        features: [
+          "Ideal for homes with moderate water issues",
+          "Chemical waterproofing treatment",
+          "Roof & wall protection",
+          "Crack filling & sealing",
+          "Better durability",
+        ],
       },
-    });
-    setEditDialogOpen(true);
+      {
+        name: "Premium Plan",
+        price: "₹129 / sq.ft",
+        features: [
+          "Complete protection for long-term performance",
+          "Advanced waterproofing system",
+          "Heat-resistant & anti-leak coating",
+          "Suitable for roof, basement & walls",
+          "High-quality materials",
+        ],
+        highlight: true,
+      },
+      {
+        name: "Complete Protection Plan",
+        price: "₹149 / sq.ft (Starting From)",
+        features: [
+          "Surface cleaning & preparation",
+          "Crack repair & sealing",
+          "Full roof waterproofing",
+          "Basement & wall protection",
+          "Bathroom & water tank treatment",
+          "Final protective coating",
+          "Long-lasting durability",
+        ],
+        note: "Best for: Complete building waterproofing solution",
+      },
+    ],
+  },
+  "Interior Construction": {
+    tagline:
+      "We create functional and modern interior spaces using quality materials, precise planning, and expert craftsmanship.",
+    plans: [
+      {
+        name: "Basic Plan",
+        price: "₹799 / sq.ft",
+        features: [
+          "Basic interior framework",
+          "Standard fittings",
+          "Simple ceiling work",
+          "Basic painting",
+          "Standard flooring",
+          "1 Revision",
+        ],
+      },
+      {
+        name: "Standard Plan",
+        price: "₹1,299 / sq.ft",
+        features: [
+          "Quality materials",
+          "Modern designs",
+          "False ceiling work",
+          "Premium painting",
+          "Quality flooring",
+          "2–3 Revisions",
+        ],
+        highlight: true,
+      },
+      {
+        name: "Premium Plan",
+        price: "₹1,999 / sq.ft",
+        features: [
+          "Luxury interior",
+          "Premium finishes",
+          "Designer false ceiling",
+          "High-end painting",
+          "Imported flooring",
+          "Unlimited revisions",
+        ],
+      },
+    ],
+  },
+  "Renovation & Remodeling": {
+    tagline:
+      "We transform old and outdated spaces into modern, functional, and stylish environments. From minor upgrades to complete makeovers, we deliver high-quality renovation solutions tailored to your needs.",
+    plans: [
+      {
+        name: "Standard Plan",
+        price: "₹899 / sq.ft",
+        features: [
+          "Ideal for partial renovation & upgrades",
+          "Wall repairs & repainting",
+          "Basic flooring upgrades",
+          "Bathroom & kitchen improvements",
+          "Minor electrical & plumbing work",
+          "Improved finishing",
+        ],
+      },
+      {
+        name: "Premium Plan",
+        price: "₹1,499 / sq.ft",
+        features: [
+          "Best for full home renovation",
+          "Complete interior remodeling",
+          "Flooring replacement & modern finishes",
+          "Modular kitchen & wardrobe upgrades",
+          "Electrical & plumbing rework",
+          "False ceiling & lighting",
+          "High-quality materials",
+        ],
+        highlight: true,
+      },
+      {
+        name: "Complete Renovation Plan",
+        price: "₹1,999 / sq.ft (Starting From)",
+        features: [
+          "Site inspection & planning",
+          "Demolition & structural modifications",
+          "Complete redesign (interior & layout)",
+          "Full electrical & plumbing setup",
+          "Premium flooring, painting & finishes",
+          "Doors, windows & fittings replacement",
+          "Final touch & ready-to-use handover",
+        ],
+        note: "Best for: Complete home or commercial space transformation",
+      },
+    ],
+  },
+  "Construction Services": {
+    tagline:
+      "We provide complete construction services with a focus on quality, durability, and modern design. From planning to execution, we ensure every project is delivered with precision and excellence.",
+    plans: [
+      {
+        name: "Standard Plan",
+        price: "₹1,999 / sq.ft",
+        features: [
+          "Ideal for modern residential construction",
+          "Strong RCC structure",
+          "Quality construction materials",
+          "Modern elevation design",
+          "Basic electrical & plumbing",
+          "Standard flooring & finishing",
+        ],
+      },
+      {
+        name: "Premium Plan",
+        price: "₹2,799 / sq.ft",
+        features: [
+          "Best for high-quality and stylish construction",
+          "Premium construction materials",
+          "Designer elevation",
+          "Advanced electrical & plumbing",
+          "High-quality flooring & finishing",
+          "Better durability & aesthetics",
+        ],
+        highlight: true,
+      },
+      {
+        name: "Complete Turnkey Plan",
+        price: "₹2,999 / sq.ft (Starting From)",
+        features: [
+          "Site preparation & foundation work",
+          "Full structural construction (RCC, walls, slab)",
+          "Electrical & plumbing complete setup",
+          "Interior & exterior finishing",
+          "Doors, windows & fittings installation",
+          "Painting & final touch works",
+          "Quality checks & supervision",
+          "Ready-to-move-in delivery",
+        ],
+        note: "Best for: Hassle-free, end-to-end construction solution",
+      },
+    ],
+  },
+  "Architectural Planning": {
+    tagline:
+      "We deliver detailed architectural designs that combine innovation, structural integrity, and practical functionality.",
+    plans: [
+      {
+        name: "Basic Plan",
+        price: "₹25,000",
+        features: [
+          "Basic floor plan",
+          "2D drawings",
+          "Site layout plan",
+          "Basic structural layout",
+          "Digital delivery",
+          "1 Revision",
+        ],
+      },
+      {
+        name: "Standard Plan",
+        price: "₹55,000",
+        features: [
+          "Detailed 2D/3D plans",
+          "Structural drawings",
+          "Electrical layout",
+          "Plumbing layout",
+          "Digital + print delivery",
+          "3 Revisions",
+        ],
+        highlight: true,
+      },
+      {
+        name: "Premium Plan",
+        price: "₹1,20,000",
+        features: [
+          "Complete project planning",
+          "3D visualization",
+          "Site supervision plan",
+          "All structural drawings",
+          "Interior design guide",
+          "Unlimited revisions",
+        ],
+      },
+    ],
+  },
+};
+
+const WHY_CHOOSE_US = [
+  { icon: "✔", label: "High-Quality Workmanship" },
+  { icon: "✔", label: "Experienced Team" },
+  { icon: "✔", label: "On-Time Delivery" },
+  { icon: "✔", label: "Transparent Pricing" },
+  { icon: "✔", label: "Customized Solutions" },
+  { icon: "✔", label: "End-to-End Service" },
+];
+
+// ---------------------------------------------------------------------------
+// Service Detail Page
+// ---------------------------------------------------------------------------
+function ServiceDetailPage() {
+  const navigate = useNavigate();
+  const service = selectedService ?? SERVICES[0];
+  const pricing =
+    SERVICE_PRICING[service.title] ??
+    SERVICE_PRICING["Waterproofing Solutions"];
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
+  function handleChoosePlan(planName: string, planPrice: string) {
+    const msg = encodeURIComponent(
+      `Hello, I am interested in your service:\n\nService: ${service.title}\nPlan: ${planName}\nPrice: ${planPrice}\n\nPlease share more details.`,
+    );
+    window.open(`https://wa.me/919000564939?text=${msg}`, "_blank");
   }
 
   return (
-    <div className="min-h-screen bg-background font-poppins flex flex-col">
+    <div
+      className="page-enter"
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "oklch(0.97 0.005 80)",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
       <Header />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
-        <AdminView
-          projects={allProjects}
-          isLoading={projectsLoading}
-          onAdd={() => setAddDialogOpen(true)}
-          onEdit={openEdit}
-          onDelete={(id) => setDeleteConfirmId(id)}
-        />
-      </main>
-      <Footer />
-      <ScrollToTopButton />
 
-      {/* Admin dialogs */}
-      <ProjectFormDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        mode="add"
-        onSubmit={(data) => addMutation.mutate(data)}
-        isPending={addMutation.isPending}
-      />
-      {editTarget && (
-        <ProjectFormDialog
-          open={editDialogOpen}
-          onOpenChange={(open) => {
-            setEditDialogOpen(open);
-            if (!open) setEditTarget(null);
+      {/* Back button */}
+      <div
+        style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 0" }}
+      >
+        <button
+          type="button"
+          data-ocid="service_detail.back.button"
+          onClick={() => navigate({ to: "/services" })}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "oklch(0.45 0.08 60)",
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontFamily: "Poppins, sans-serif",
           }}
-          mode="edit"
-          initialData={editTarget.data}
-          onSubmit={(data) => editMutation.mutate({ id: editTarget.id, data })}
-          isPending={editMutation.isPending}
-        />
-      )}
-      <AlertDialog
-        open={deleteConfirmId !== null}
-        onOpenChange={(open) => {
-          if (!open) setDeleteConfirmId(null);
+        >
+          ← Back to Services
+        </button>
+      </div>
+
+      {/* Hero Section */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "24px auto 0",
+          padding: "0 16px",
         }}
       >
-        <AlertDialogContent data-ocid="project.dialog">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. The project will be permanently
-              removed from the canister.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel data-ocid="project.cancel_button">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              data-ocid="project.confirm_button"
-              onClick={() =>
-                deleteConfirmId !== null &&
-                deleteMutation.mutate(deleteConfirmId)
-              }
-              className="bg-destructive hover:bg-destructive/90 text-white"
-              disabled={deleteMutation.isPending}
+        <div
+          style={{
+            borderRadius: "20px",
+            overflow: "hidden",
+            position: "relative",
+            aspectRatio: "21/7",
+          }}
+        >
+          <img
+            src={service.image}
+            alt={service.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to right, oklch(0.10 0.02 60 / 0.75) 0%, oklch(0.10 0.02 60 / 0.25) 60%, transparent 100%)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              padding: "clamp(20px, 4vw, 48px)",
+            }}
+          >
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(28px, 4vw, 52px)",
+                fontWeight: 700,
+                color: "#ffffff",
+                margin: 0,
+                lineHeight: 1.15,
+                maxWidth: "600px",
+              }}
             >
-              {deleteMutation.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {service.title}
+            </h1>
+            <p
+              style={{
+                fontSize: "clamp(13px, 1.6vw, 16px)",
+                color: "rgba(255,255,255,0.85)",
+                marginTop: "12px",
+                maxWidth: "520px",
+                lineHeight: 1.7,
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              {pricing.tagline}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Plans */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "56px auto 0",
+          padding: "0 16px",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h2
+            style={{
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(26px, 3.5vw, 40px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              margin: 0,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Choose Your Plan
+          </h2>
+          <div
+            style={{
+              width: "60px",
+              height: "2px",
+              backgroundColor: "oklch(0.42 0.08 155)",
+              margin: "14px auto 0",
+              borderRadius: "2px",
+            }}
+          />
+          <p
+            style={{
+              fontSize: "14px",
+              color: "oklch(0.50 0.02 60)",
+              marginTop: "14px",
+              fontFamily: "Poppins, sans-serif",
+            }}
+          >
+            Select the plan that best fits your requirements and budget.
+          </p>
+        </div>
+
+        <div
+          data-ocid="service_detail.plans.section"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "24px",
+            alignItems: "stretch",
+          }}
+        >
+          {pricing.plans.map((plan, idx) => (
+            <div
+              key={plan.name}
+              data-ocid={`service_detail.plan.${idx + 1}`}
+              style={{
+                borderRadius: "16px",
+                backgroundColor: plan.highlight
+                  ? "oklch(0.42 0.08 155)"
+                  : "oklch(1 0 0)",
+                border: plan.highlight
+                  ? "2px solid oklch(0.42 0.08 155)"
+                  : "1.5px solid oklch(0.90 0.01 80)",
+                padding: "32px 28px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                boxShadow: plan.highlight
+                  ? "0 8px 32px oklch(0.42 0.08 155 / 0.25)"
+                  : "0 2px 12px oklch(0.3 0.02 60 / 0.06)",
+                position: "relative",
+                transform: plan.highlight ? "scale(1.02)" : "scale(1)",
+                transition: "box-shadow 0.2s ease, transform 0.2s ease",
+              }}
+            >
+              {plan.highlight && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-14px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    backgroundColor: "oklch(0.65 0.15 50)",
+                    color: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    padding: "4px 16px",
+                    borderRadius: "999px",
+                    textTransform: "uppercase",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Most Popular
+                </div>
+              )}
+              <div>
+                <p
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: plan.highlight
+                      ? "rgba(255,255,255,0.75)"
+                      : "oklch(0.55 0.02 60)",
+                    margin: 0,
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  {plan.name}
+                </p>
+                <p
+                  style={{
+                    fontSize: "clamp(22px, 3vw, 30px)",
+                    fontWeight: 700,
+                    color: plan.highlight ? "#ffffff" : "oklch(0.20 0.01 60)",
+                    margin: "8px 0 0",
+                    fontFamily: "Cormorant Garamond, serif",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {plan.price}
+                </p>
+              </div>
+              <ul
+                style={{
+                  listStyle: "none",
+                  margin: 0,
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  flex: 1,
+                }}
+              >
+                {plan.features.map((feat) => (
+                  <li
+                    key={feat}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      fontSize: "13px",
+                      color: plan.highlight
+                        ? "rgba(255,255,255,0.88)"
+                        : "oklch(0.38 0.02 60)",
+                      fontFamily: "Poppins, sans-serif",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <span
+                      style={{
+                        flexShrink: 0,
+                        fontSize: "14px",
+                        color: plan.highlight
+                          ? "rgba(255,255,255,0.9)"
+                          : "oklch(0.42 0.10 155)",
+                        marginTop: "1px",
+                      }}
+                    >
+                      ✓
+                    </span>
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              {plan.note && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    color: plan.highlight
+                      ? "rgba(255,255,255,0.85)"
+                      : "oklch(0.45 0.08 155)",
+                    fontFamily: "Poppins, sans-serif",
+                    margin: "4px 0 0",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {plan.note}
+                </p>
+              )}
+              <button
+                type="button"
+                data-ocid={`service_detail.choose_plan.button.${idx + 1}`}
+                onClick={() => handleChoosePlan(plan.name, plan.price)}
+                style={{
+                  width: "100%",
+                  padding: "14px 20px",
+                  borderRadius: "10px",
+                  border: plan.highlight
+                    ? "none"
+                    : "1.5px solid oklch(0.42 0.12 145)",
+                  backgroundColor: plan.highlight
+                    ? "oklch(0.97 0.005 80)"
+                    : "oklch(0.42 0.12 145)",
+                  color: plan.highlight ? "oklch(0.30 0.08 155)" : "#ffffff",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  letterSpacing: "0.04em",
+                  fontFamily: "Poppins, sans-serif",
+                  boxShadow: plan.highlight
+                    ? "none"
+                    : "0 3px 12px oklch(0.42 0.12 145 / 0.3)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.opacity = "0.88";
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(0)";
+                }}
+              >
+                Choose Plan
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Areas We Cover */}
+      {pricing.areas && pricing.areas.length > 0 && (
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "56px auto 0",
+            padding: "0 16px",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: "32px" }}>
+            <h2
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(24px, 3vw, 36px)",
+                fontWeight: 600,
+                color: "oklch(0.18 0.01 60)",
+                margin: 0,
+                letterSpacing: "0.04em",
+              }}
+            >
+              🛠️ Areas We Cover
+            </h2>
+            <div
+              style={{
+                width: "60px",
+                height: "2px",
+                backgroundColor: "oklch(0.42 0.08 155)",
+                margin: "14px auto 0",
+                borderRadius: "2px",
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "16px",
+              justifyContent: "center",
+            }}
+          >
+            {pricing.areas.map((area) => (
+              <div
+                key={area}
+                style={{
+                  backgroundColor: "oklch(1 0 0)",
+                  border: "1.5px solid oklch(0.90 0.01 80)",
+                  borderRadius: "12px",
+                  padding: "16px 28px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: "oklch(0.25 0.02 60)",
+                  fontFamily: "Poppins, sans-serif",
+                  boxShadow: "0 2px 8px oklch(0.3 0.02 60 / 0.06)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <span
+                  style={{ color: "oklch(0.42 0.08 155)", fontSize: "16px" }}
+                >
+                  ✓
+                </span>
+                {area}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Why Choose Us */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "72px auto 0",
+          padding: "0 16px 80px",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h2
+            style={{
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(26px, 3.5vw, 40px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              margin: 0,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Why Choose Us
+          </h2>
+          <div
+            style={{
+              width: "60px",
+              height: "2px",
+              backgroundColor: "oklch(0.52 0.09 50)",
+              margin: "14px auto 0",
+              borderRadius: "2px",
+            }}
+          />
+        </div>
+
+        <div
+          data-ocid="service_detail.why_us.section"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {WHY_CHOOSE_US.map((item) => (
+            <div
+              key={item.label}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "14px",
+                backgroundColor: "oklch(1 0 0)",
+                borderRadius: "12px",
+                padding: "20px 24px",
+                border: "1px solid oklch(0.92 0.01 80)",
+                boxShadow: "0 2px 8px oklch(0.3 0.02 60 / 0.05)",
+              }}
+            >
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "oklch(0.42 0.08 155 / 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  fontSize: "16px",
+                  color: "oklch(0.42 0.08 155)",
+                  fontWeight: 700,
+                }}
+              >
+                {item.icon}
+              </div>
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: "oklch(0.25 0.02 60)",
+                  fontFamily: "Poppins, sans-serif",
+                  lineHeight: 1.4,
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }
@@ -2432,6 +3162,10 @@ function ProductDetailPage() {
   const product = selectedProduct ?? PRODUCTS[0];
   const [buying, setBuying] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   const handleBuyNow = () => {
     setBuying(true);
@@ -2748,7 +3482,7 @@ function ProductDetailPage() {
                 <span style={{ position: "relative", zIndex: 1 }}>
                   {buying
                     ? "Connecting to WhatsApp..."
-                    : "🟢 Buy Now via WhatsApp"}
+                    : "Buy Now via WhatsApp"}
                 </span>
               </button>
             </div>
@@ -2757,7 +3491,6 @@ function ProductDetailPage() {
       </div>
 
       <Footer />
-      <ScrollToTopButton />
     </div>
   );
 }
@@ -2766,7 +3499,20 @@ function ProductDetailPage() {
 // Root route component
 // ---------------------------------------------------------------------------
 function RootRoute() {
-  return <Outlet />;
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname scroll reset is intentional
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+
+  return (
+    <>
+      <Outlet />
+      <ScrollToTopButton />
+    </>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -2796,12 +3542,24 @@ const servicesRoute = createRoute({
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
-  component: AdminPageComponent,
+  component: AdminPage,
 });
 const productDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/product-detail",
   component: ProductDetailPage,
+});
+
+const serviceDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/service-detail",
+  component: ServiceDetailPage,
+});
+
+const projectsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/projects",
+  component: ProjectsPageComponent,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -2811,6 +3569,8 @@ const routeTree = rootRoute.addChildren([
   servicesRoute,
   adminRoute,
   productDetailRoute,
+  serviceDetailRoute,
+  projectsRoute,
 ]);
 
 // ---------------------------------------------------------------------------

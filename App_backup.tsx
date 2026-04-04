@@ -788,6 +788,19 @@ function OurServicesSection({
           >
             Our Services
           </h2>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.42 0.08 155)" }}
+            />
+            <span style={{ fontSize: "14px", color: "oklch(0.42 0.08 155)" }}>
+              ✦
+            </span>
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.42 0.08 155)" }}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -955,6 +968,19 @@ function OurProductsSection({
           >
             Our Products
           </h2>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+            <span style={{ fontSize: "14px", color: "oklch(0.52 0.09 50)" }}>
+              ✦
+            </span>
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -1217,6 +1243,19 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
           >
             Completed &amp; Ongoing Developments
           </p>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+            <span style={{ fontSize: "14px", color: "oklch(0.52 0.09 50)" }}>
+              ✦
+            </span>
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
@@ -1377,6 +1416,19 @@ function ProjectsPageComponent() {
           >
             Our Projects
           </h1>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+            <span style={{ fontSize: "14px", color: "oklch(0.52 0.09 50)" }}>
+              ✦
+            </span>
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+          </div>
         </div>
       </section>
 
@@ -2191,6 +2243,19 @@ function ProductsPageComponent() {
           >
             Premium Construction Products
           </h1>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+            <span style={{ fontSize: "14px", color: "oklch(0.52 0.09 50)" }}>
+              ✦
+            </span>
+            <div
+              className="h-px"
+              style={{ width: "60px", backgroundColor: "oklch(0.52 0.09 50)" }}
+            />
+          </div>
         </div>
       </section>
       <OurProductsSection />
@@ -2231,6 +2296,25 @@ function ServicesPageComponent() {
             >
               Our Services
             </h1>
+            <div className="flex items-center justify-center gap-3 mt-3">
+              <div
+                className="h-px"
+                style={{
+                  width: "60px",
+                  backgroundColor: "oklch(0.42 0.08 155)",
+                }}
+              />
+              <span style={{ fontSize: "14px", color: "oklch(0.42 0.08 155)" }}>
+                ✦
+              </span>
+              <div
+                className="h-px"
+                style={{
+                  width: "60px",
+                  backgroundColor: "oklch(0.42 0.08 155)",
+                }}
+              />
+            </div>
             <p
               className="font-poppins max-w-2xl mx-auto mt-6"
               style={{
