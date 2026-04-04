@@ -1607,24 +1607,9 @@ function AboutUsSection() {
         }}
       />
 
-      <div className="max-w-5xl mx-auto relative z-10 flex flex-col items-center gap-10">
-        {/* Logo: centered at top */}
-        <div className="flex items-center justify-center">
-          <img
-            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
-            alt="Trevia Projects Logo"
-            style={{
-              maxWidth: "380px",
-              width: "100%",
-              height: "auto",
-              objectFit: "contain",
-              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.22))",
-            }}
-          />
-        </div>
-
-        {/* Text content: below logo, centered */}
-        <div className="flex flex-col items-center text-center">
+      <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+        {/* Text content: left side */}
+        <div className="flex-1 flex flex-col items-start text-left">
           <h2
             className="font-cormorant"
             style={{
@@ -1680,7 +1665,7 @@ function AboutUsSection() {
             Explore Our Services
           </p>
 
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-3 mb-12">
+          <div className="flex flex-wrap gap-x-5 gap-y-3 mb-12">
             {serviceLinks.map((link) => (
               <button
                 key={link}
@@ -1705,7 +1690,7 @@ function AboutUsSection() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-3">
             <div
               className="h-px flex-1"
               style={{
@@ -1724,6 +1709,21 @@ function AboutUsSection() {
               }}
             />
           </div>
+        </div>
+
+        {/* Logo: right side, centered vertically */}
+        <div className="flex-shrink-0 flex items-center justify-center">
+          <img
+            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
+            alt="Trevia Projects Logo"
+            style={{
+              maxWidth: "340px",
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
+              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.22))",
+            }}
+          />
         </div>
       </div>
     </section>
