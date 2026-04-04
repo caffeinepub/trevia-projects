@@ -298,6 +298,11 @@ function Header() {
     navigate({ to: "/contact" });
   }
 
+  function handleNavProjects() {
+    setMobileMenuOpen(false);
+    navigate({ to: "/projects" });
+  }
+
   function handleNavAbout() {
     setMobileMenuOpen(false);
     if (currentPath === "/") {
@@ -406,6 +411,7 @@ function Header() {
           {[
             { label: "SHOP", handler: handleNavShop },
             { label: "SERVICES", handler: handleNavServices },
+            { label: "PROJECTS", handler: handleNavProjects },
             { label: "CONTACT", handler: handleNavContact },
             { label: "ABOUT", handler: handleNavAbout },
           ].map(({ label, handler }) => (
@@ -479,6 +485,7 @@ function Header() {
                   {[
                     { label: "SHOP", handler: handleNavShop },
                     { label: "SERVICES", handler: handleNavServices },
+                    { label: "PROJECTS", handler: handleNavProjects },
                     { label: "CONTACT", handler: handleNavContact },
                     { label: "ABOUT", handler: handleNavAbout },
                   ].map(({ label, handler }) => (
@@ -567,7 +574,6 @@ function Footer() {
                   height: "56px",
                   width: "auto",
                   objectFit: "contain",
-                  filter: "brightness(0) invert(1) opacity(0.95)",
                 }}
               />
             </div>
@@ -761,8 +767,6 @@ function OurServicesSection({
   showViewAll = false,
 }: { showViewAll?: boolean }) {
   const navigate = useNavigate();
-  const firstRow = SERVICES.slice(0, 3);
-  const secondRow = SERVICES.slice(3);
 
   function handleServiceClick(service: (typeof SERVICES)[number]) {
     selectedService = service;
@@ -790,116 +794,52 @@ function OurServicesSection({
           </h2>
         </div>
 
-        <div className="flex flex-col gap-6">
-          {/* First row: 3 services */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {firstRow.map((service, i) => (
-              <button
-                type="button"
-                key={service.title}
-                data-ocid={`services.item.${i + 1}`}
-                className="rounded-xl overflow-hidden shadow-md min-w-0 cursor-pointer text-left w-full p-0"
-                style={{ border: "none", background: "transparent" }}
-                aria-label={`View details for ${service.title}`}
-                onClick={() => handleServiceClick(service)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {SERVICES.map((service, i) => (
+            <button
+              type="button"
+              key={service.title}
+              data-ocid={`services.item.${i + 1}`}
+              className={`rounded-xl overflow-hidden shadow-md cursor-pointer text-left p-0 w-full${i === 4 ? " lg:col-start-2" : ""}`}
+              style={{ border: "none", background: "transparent" }}
+              aria-label={`View details for ${service.title}`}
+              onClick={() => handleServiceClick(service)}
+            >
+              <div className="overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <div
+                className="p-6"
+                style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
               >
-                <div
-                  className="overflow-hidden"
-                  style={{ aspectRatio: "16/9" }}
+                <h3
+                  className="font-cormorant italic"
+                  style={{
+                    fontSize: "22px",
+                    fontWeight: 600,
+                    color: "#ffffff",
+                    marginBottom: "10px",
+                  }}
                 >
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <div
-                  className="p-6"
-                  style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
+                  {service.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.82)",
+                    lineHeight: 1.65,
+                  }}
                 >
-                  <h3
-                    className="font-cormorant italic"
-                    style={{
-                      fontSize: "22px",
-                      fontWeight: 600,
-                      color: "#ffffff",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {service.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "rgba(255,255,255,0.82)",
-                      lineHeight: 1.65,
-                    }}
-                  >
-                    {service.desc}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Second row: 2 services centered */}
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            {secondRow.map((service, i) => (
-              <button
-                type="button"
-                key={service.title}
-                data-ocid={`services.item.${firstRow.length + i + 1}`}
-                className="rounded-xl overflow-hidden shadow-md cursor-pointer text-left p-0 w-full sm:w-auto"
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  maxWidth: "400px",
-                  flexShrink: 0,
-                  flexBasis: "calc(33.333% - 8px)",
-                }}
-                aria-label={`View details for ${service.title}`}
-                onClick={() => handleServiceClick(service)}
-              >
-                <div
-                  className="overflow-hidden"
-                  style={{ aspectRatio: "16/9" }}
-                >
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <div
-                  className="p-6"
-                  style={{ backgroundColor: "oklch(0.42 0.08 155)" }}
-                >
-                  <h3
-                    className="font-cormorant italic"
-                    style={{
-                      fontSize: "22px",
-                      fontWeight: 600,
-                      color: "#ffffff",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {service.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "rgba(255,255,255,0.82)",
-                      lineHeight: 1.65,
-                    }}
-                  >
-                    {service.desc}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+                  {service.desc}
+                </p>
+              </div>
+            </button>
+          ))}
         </div>
 
         {showViewAll && (
@@ -1185,8 +1125,173 @@ const PROJECTS = [
 // ---------------------------------------------------------------------------
 // ProjectsSection (Home page section)
 // ---------------------------------------------------------------------------
+function ProjectDetailModal({
+  project,
+  onClose,
+  showViewAll = false,
+}: {
+  project: (typeof PROJECTS)[number];
+  onClose: () => void;
+  showViewAll?: boolean;
+}) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  return (
+    <div
+      data-ocid="projects.modal"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
+      onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
+      tabIndex={-1}
+    >
+      <div
+        className="relative bg-white rounded-2xl overflow-hidden w-full max-w-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        style={{ maxHeight: "90vh", overflowY: "auto" }}
+      >
+        <button
+          type="button"
+          data-ocid="projects.modal.close_button"
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 flex items-center justify-center rounded-full bg-white/90 shadow transition-all hover:bg-white"
+          style={{
+            width: "36px",
+            height: "36px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <title>Close</title>
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        <div
+          className="relative overflow-hidden"
+          style={{ aspectRatio: "16/9" }}
+        >
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
+          <span
+            className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+            style={{
+              letterSpacing: "0.08em",
+              backgroundColor:
+                project.status === "Completed"
+                  ? "oklch(0.45 0.14 155)"
+                  : "oklch(0.60 0.18 55)",
+            }}
+          >
+            {project.status}
+          </span>
+        </div>
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h2
+              className="font-cormorant font-semibold"
+              style={{
+                fontSize: "28px",
+                color: "oklch(0.18 0.01 60)",
+                lineHeight: 1.2,
+              }}
+            >
+              {project.title}
+            </h2>
+            <span
+              className="font-poppins shrink-0"
+              style={{
+                fontSize: "12px",
+                color: "oklch(0.55 0.06 55)",
+                fontWeight: 500,
+                marginTop: "5px",
+              }}
+            >
+              {project.year}
+            </span>
+          </div>
+          <p
+            className="font-poppins mb-1"
+            style={{ fontSize: "13px", color: "oklch(0.52 0.04 60)" }}
+          >
+            {project.type} · {project.location}
+          </p>
+          <p
+            className="font-poppins mb-4"
+            style={{ fontSize: "13px", color: "oklch(0.55 0.02 60)" }}
+          >
+            Area: {project.area}
+          </p>
+          <p
+            className="font-poppins"
+            style={{
+              fontSize: "14px",
+              color: "oklch(0.35 0.02 60)",
+              lineHeight: 1.7,
+            }}
+          >
+            {project.desc}
+          </p>
+          {showViewAll && (
+            <div className="flex justify-center mt-6">
+              <button
+                type="button"
+                data-ocid="projects.modal.view_all.button"
+                onClick={() => {
+                  onClose();
+                  navigate({ to: "/projects" });
+                }}
+                className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  color: "oklch(0.52 0.09 50)",
+                  border: "1px solid oklch(0.52 0.09 50)",
+                  borderRadius: "2px",
+                  padding: "10px 32px",
+                  background: "transparent",
+                  cursor: "pointer",
+                  minHeight: "44px",
+                }}
+              >
+                View All Projects
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
   const navigate = useNavigate();
+  const [selectedProject, setSelectedProject] = useState<
+    (typeof PROJECTS)[number] | null
+  >(null);
 
   return (
     <section
@@ -1195,6 +1300,13 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
       className="w-full py-20 px-4 sm:px-6"
       style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
     >
+      {selectedProject && (
+        <ProjectDetailModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+          showViewAll={showViewAll}
+        />
+      )}
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-4">
           <h2
@@ -1215,20 +1327,25 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
               letterSpacing: "0.08em",
             }}
           >
-            Completed &amp; Ongoing Developments
+            Ongoing Developments
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-          {PROJECTS.map((project, i) => (
+          {PROJECTS.filter((p) => p.status === "Ongoing").map((project, i) => (
             <div
               key={project.id}
               data-ocid={`projects.item.${i + 1}`}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm"
+              className="bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer"
               style={{
                 border: "1px solid oklch(0.92 0.01 80)",
                 transition:
                   "transform 220ms ease-out, box-shadow 220ms ease-out",
+              }}
+              onClick={() => setSelectedProject(project)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ")
+                  setSelectedProject(project);
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.transform =
@@ -1345,15 +1462,27 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
 // ---------------------------------------------------------------------------
 // ProjectsPage
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ProjectsPage
+// ---------------------------------------------------------------------------
 function ProjectsPageComponent() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<"All" | "Completed" | "Ongoing">("All");
+  const [selectedProject, setSelectedProject] = useState<
+    (typeof PROJECTS)[number] | null
+  >(null);
 
   const filtered =
     filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.status === filter);
 
   return (
     <PageShell>
+      {selectedProject && (
+        <ProjectDetailModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
       <section
         data-ocid="projects.page"
         className="w-full pt-14 pb-2 px-4 sm:px-6"
@@ -1385,7 +1514,6 @@ function ProjectsPageComponent() {
         style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
       >
         <div className="max-w-7xl mx-auto">
-          {/* Filter tabs */}
           <div
             className="flex justify-center gap-3 mb-10"
             data-ocid="projects.filter.tab"
@@ -1421,11 +1549,16 @@ function ProjectsPageComponent() {
               <div
                 key={project.id}
                 data-ocid={`projects.item.${i + 1}`}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm"
+                className="bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer"
                 style={{
                   border: "1px solid oklch(0.92 0.01 80)",
                   transition:
                     "transform 220ms ease-out, box-shadow 220ms ease-out",
+                }}
+                onClick={() => setSelectedProject(project)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ")
+                    setSelectedProject(project);
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.transform =
@@ -1690,16 +1823,16 @@ function AboutUsSection() {
         </div>
 
         {/* Logo: right side, centered vertically */}
-        <div className="flex-shrink-0 flex items-center justify-center">
+        <div className="flex-shrink-0 flex items-center justify-center md:w-64 lg:w-80">
           <img
-            src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
+            src="/assets/logo_01-019d5818-1097-742e-a17c-a7cc8ed3c613.png"
             alt="Trevia Projects Logo"
             style={{
-              maxWidth: "520px",
+              maxWidth: "280px",
               width: "100%",
               height: "auto",
               objectFit: "contain",
-              filter: "drop-shadow(0 8px 32px oklch(0.52 0.09 50 / 0.22))",
+              filter: "drop-shadow(0 4px 16px oklch(0.52 0.09 50 / 0.18))",
             }}
           />
         </div>
