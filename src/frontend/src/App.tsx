@@ -1701,7 +1701,6 @@ function PageShell({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <ScrollToTopButton />
     </div>
   );
 }
@@ -2693,7 +2692,6 @@ function ServiceDetailPage() {
       </div>
 
       <Footer />
-      <ScrollToTopButton />
     </div>
   );
 }
@@ -3035,7 +3033,6 @@ function ProductDetailPage() {
       </div>
 
       <Footer />
-      <ScrollToTopButton />
     </div>
   );
 }
@@ -3052,7 +3049,12 @@ function RootRoute() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ScrollToTopButton />
+    </>
+  );
 }
 
 // ---------------------------------------------------------------------------
