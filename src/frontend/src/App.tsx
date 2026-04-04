@@ -1668,7 +1668,7 @@ function AboutUsSection() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full">
             <div
               className="h-px flex-1"
               style={{
@@ -1844,7 +1844,7 @@ function ContactUsSection() {
                   Trevia Projects, Guntur, Andhra Pradesh, India
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full">
                 <Mail
                   className="w-4 h-4 flex-shrink-0"
                   style={{ color: "oklch(0.42 0.08 155)" }}
@@ -1856,7 +1856,7 @@ function ContactUsSection() {
                   contact@treviaprojects.com
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full">
                 <Phone
                   className="w-4 h-4 flex-shrink-0"
                   style={{ color: "oklch(0.42 0.08 155)" }}
