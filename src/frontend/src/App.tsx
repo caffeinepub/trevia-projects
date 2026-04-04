@@ -320,7 +320,7 @@ function Header() {
           <img
             src="/assets/trevialogo-019d56b3-17e3-7435-a4db-304c47c47498.png"
             alt="Trevia Projects"
-            style={{ height: "44px", width: "auto", objectFit: "contain" }}
+            style={{ height: "64px", width: "auto", objectFit: "contain" }}
           />
         </button>
 
