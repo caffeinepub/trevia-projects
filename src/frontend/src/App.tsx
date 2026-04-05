@@ -693,6 +693,7 @@ function Footer() {
             &copy; {new Date().getFullYear()} Trevia Projects. All rights
             reserved.
           </p>
+          <p>Built with ❤️ for Trevia Projects</p>
         </div>
       </div>
     </footer>
