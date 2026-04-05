@@ -618,6 +618,24 @@ function Footer() {
                   Projects
                 </button>
               </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/products" })}
+                  className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+                >
+                  Shop
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/contact" })}
+                  className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
+                >
+                  Contact Us
+                </button>
+              </li>
             </ul>
           </div>
 
