@@ -2224,417 +2224,705 @@ function AboutUsSection() {
 // ContactUs section
 // ---------------------------------------------------------------------------
 function ContactUsSection() {
-  const [formData, setFormData] = useState({
+  const STEPS = [
+    {
+      key: "name",
+      question: "What's your name?",
+      type: "text",
+      placeholder: "Your full name",
+    },
+    {
+      key: "email",
+      question: "How can we reach you?",
+      type: "email",
+      placeholder: "Your email address",
+    },
+    {
+      key: "phone",
+      question: "And your phone number?",
+      type: "tel",
+      placeholder: "10-digit mobile number",
+    },
+    {
+      key: "interested",
+      question: "What are you looking for?",
+      type: "select",
+      options: [
+        "Construction Services",
+        "Architectural Planning",
+        "Waterproofing Solutions",
+        "Interior Construction",
+        "Renovation & Remodeling",
+        "General Enquiry",
+      ],
+    },
+    {
+      key: "message",
+      question: "Tell us about your project.",
+      type: "textarea",
+      placeholder: "Describe your project, timeline, budget...",
+    },
+  ] as const;
+
+  type StepKey = (typeof STEPS)[number]["key"];
+
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<StepKey, string>>({
     name: "",
     email: "",
     phone: "",
     interested: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [typedQuestion, setTypedQuestion] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
-  function handleChange(
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const step = STEPS[currentStep];
+
+  // Typewriter effect for question
+  // biome-ignore lint/correctness/useExhaustiveDependencies: STEPS is a stable const
+  useEffect(() => {
+    if (submitted) return;
+    const question = STEPS[currentStep].question;
+    setTypedQuestion("");
+    setIsTyping(true);
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setTypedQuestion(question.slice(0, i));
+      if (i >= question.length) {
+        clearInterval(interval);
+        setIsTyping(false);
+        setTimeout(() => {
+          if (inputRef.current) inputRef.current.focus();
+        }, 100);
+      }
+    }, 38);
+    return () => clearInterval(interval);
+  }, [currentStep, submitted]);
+
+  useEffect(() => {
+    if (!isTyping && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isTyping]);
+
+  function advanceStep(value?: string) {
+    const val = value ?? inputValue;
+    if (!val.trim()) return;
+
+    const key = STEPS[currentStep].key;
+
+    // Validate based on key
+    if (key === "name") {
+      if (val.trim().length < 2) {
+        setError("Name must be at least 2 characters.");
+        return;
+      }
+      if (!/^[a-zA-Z\s]+$/.test(val.trim())) {
+        setError("Name should contain only letters.");
+        return;
+      }
+    }
+
+    if (key === "email") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+    }
+
+    if (key === "phone") {
+      const digits = val.replace(/\D/g, "");
+      if (digits.length !== 10) {
+        setError("Phone number must be exactly 10 digits.");
+        return;
+      }
+    }
+
+    if (key === "message") {
+      if (val.trim().length < 10) {
+        setError("Please provide at least 10 characters.");
+        return;
+      }
+    }
+
+    setError("");
+    const updated = { ...answers, [key]: val };
+    setAnswers(updated);
+
+    if (currentStep < STEPS.length - 1) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentStep((s) => s + 1);
+        setInputValue("");
+        setError("");
+        setIsTransitioning(false);
+      }, 320);
+    } else {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        try {
+          const submissions = JSON.parse(
+            localStorage.getItem("trevia_contact_submissions") || "[]",
+          );
+          submissions.push({
+            name: updated.name,
+            email: updated.email,
+            phone: updated.phone,
+            interested: updated.interested,
+            message: updated.message,
+            date: new Date().toISOString(),
+            status: "new",
+          });
+          localStorage.setItem(
+            "trevia_contact_submissions",
+            JSON.stringify(submissions),
+          );
+        } catch (_e) {
+          /* ignore */
+        }
+        toast.success("Message sent! We'll get back to you soon.");
+        setSubmitted(true);
+        setIsTransitioning(false);
+      }, 320);
+    }
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      // Save to localStorage
-      try {
-        const submissions = JSON.parse(
-          localStorage.getItem("trevia_contact_submissions") || "[]",
-        );
-        submissions.push({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          interested: formData.interested,
-          message: formData.message,
-          date: new Date().toISOString(),
-          status: "new",
-        });
-        localStorage.setItem(
-          "trevia_contact_submissions",
-          JSON.stringify(submissions),
-        );
-      } catch (_e) {
-        /* ignore */
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (step.type === "textarea") {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        advanceStep();
       }
-      setIsSubmitting(false);
-      setSubmitted(true);
-      toast.success("Message sent! We'll get back to you soon.");
-    }, 1200);
+    } else {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        advanceStep();
+      }
+    }
+  }
+
+  const completedAnswers = STEPS.slice(0, currentStep)
+    .map((s) => answers[s.key])
+    .filter(Boolean);
+
+  if (submitted) {
+    return (
+      <section
+        data-ocid="contact.section"
+        id="contact"
+        className="w-full min-h-screen flex items-center justify-center relative overflow-hidden"
+        style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(ellipse at 30% 50%, oklch(0.88 0.03 80 / 0.5) 0%, transparent 60%), radial-gradient(ellipse at 75% 20%, oklch(0.92 0.02 75 / 0.4) 0%, transparent 50%)",
+          }}
+        />
+        <div
+          data-ocid="contact.success_state"
+          className="relative z-10 text-center px-6"
+          style={{ animation: "contactFadeUp 0.8s ease forwards" }}
+        >
+          <div className="flex justify-center mb-10">
+            <svg
+              width="72"
+              height="72"
+              viewBox="0 0 72 72"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Success checkmark"
+              role="img"
+            >
+              <title>Success checkmark</title>
+              <circle
+                cx="36"
+                cy="36"
+                r="34"
+                stroke="oklch(0.52 0.09 50)"
+                strokeWidth="1.5"
+                style={{
+                  strokeDasharray: 214,
+                  strokeDashoffset: 0,
+                  animation: "contactDrawCircle 1s ease forwards",
+                }}
+              />
+              <path
+                d="M22 36L31 45L50 27"
+                stroke="oklch(0.52 0.09 50)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  strokeDasharray: 40,
+                  strokeDashoffset: 40,
+                  animation: "contactDrawCheck 0.5s 0.9s ease forwards",
+                }}
+              />
+            </svg>
+          </div>
+
+          <h2
+            className="font-cormorant"
+            style={{
+              fontSize: "clamp(36px, 6vw, 68px)",
+              fontWeight: 400,
+              color: "oklch(0.18 0.01 60)",
+              lineHeight: 1.1,
+              fontStyle: "italic",
+              marginBottom: "20px",
+            }}
+          >
+            Thank you, {answers.name}.
+          </h2>
+          <p
+            className="font-poppins"
+            style={{
+              fontSize: "15px",
+              color: "oklch(0.50 0.02 60)",
+              letterSpacing: "0.06em",
+              marginBottom: "48px",
+            }}
+          >
+            We&apos;ll be in touch shortly.
+          </p>
+
+          <div className="inline-flex flex-wrap gap-3 justify-center max-w-lg">
+            {[answers.email, answers.phone, answers.interested]
+              .filter(Boolean)
+              .map((val) => (
+                <span
+                  key={val}
+                  className="font-poppins"
+                  style={{
+                    fontSize: "11px",
+                    color: "oklch(0.50 0.02 60)",
+                    letterSpacing: "0.05em",
+                    padding: "6px 14px",
+                    border: "1px solid oklch(0.85 0.02 75)",
+                    borderRadius: "999px",
+                    backgroundColor: "oklch(1 0 0)",
+                  }}
+                >
+                  {val}
+                </span>
+              ))}
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes contactDrawCircle {
+            from { stroke-dashoffset: 214; }
+            to { stroke-dashoffset: 0; }
+          }
+          @keyframes contactDrawCheck {
+            to { stroke-dashoffset: 0; }
+          }
+          @keyframes contactFadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </section>
+    );
   }
 
   return (
     <section
       data-ocid="contact.section"
       id="contact"
-      className="w-full py-20 px-4"
-      style={{ backgroundColor: "oklch(0.98 0.008 80)" }}
+      className="w-full min-h-screen flex flex-col relative overflow-hidden"
+      style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <p
-            className="font-poppins uppercase tracking-[0.22em] mb-3"
-            style={{ fontSize: "11px", color: "oklch(0.65 0.02 60)" }}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse at 20% 60%, oklch(0.88 0.03 80 / 0.5) 0%, transparent 55%), radial-gradient(ellipse at 80% 15%, oklch(0.92 0.02 75 / 0.4) 0%, transparent 45%)",
+        }}
+      />
+
+      {/* Top contact strip */}
+      <div
+        className="relative z-10 w-full px-8 md:px-16 pt-10 pb-6 flex flex-wrap items-center gap-6 md:gap-10"
+        style={{ borderBottom: "1px solid oklch(0.88 0.02 75)" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <MapPin
+            className="w-3.5 h-3.5 flex-shrink-0"
+            style={{ color: "oklch(0.52 0.09 50)" }}
+          />
+          <span
+            className="font-poppins"
+            style={{
+              fontSize: "11px",
+              color: "oklch(0.50 0.02 60)",
+              letterSpacing: "0.06em",
+            }}
           >
-            Contact Us
-          </p>
+            Guntur, Andhra Pradesh, India
+          </span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Mail
+            className="w-3.5 h-3.5 flex-shrink-0"
+            style={{ color: "oklch(0.52 0.09 50)" }}
+          />
+          <span
+            className="font-poppins"
+            style={{
+              fontSize: "11px",
+              color: "oklch(0.50 0.02 60)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            contact@treviaprojects.com
+          </span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Phone
+            className="w-3.5 h-3.5 flex-shrink-0"
+            style={{ color: "oklch(0.52 0.09 50)" }}
+          />
+          <span
+            className="font-poppins"
+            style={{
+              fontSize: "11px",
+              color: "oklch(0.50 0.02 60)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            +91 94909 00088
+          </span>
+        </div>
+
+        <div className="ml-auto">
+          <span
+            className="font-poppins tabular-nums"
+            style={{
+              fontSize: "11px",
+              letterSpacing: "0.12em",
+              color: "oklch(0.65 0.02 60)",
+            }}
+          >
+            <span style={{ color: "oklch(0.52 0.09 50)", fontWeight: 600 }}>
+              0{currentStep + 1}
+            </span>{" "}
+            / <span>0{STEPS.length}</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Main form area */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 md:py-16">
+        <div
+          className="max-w-3xl"
+          style={{
+            opacity: isTransitioning ? 0 : 1,
+            transform: isTransitioning ? "translateY(12px)" : "translateY(0)",
+            transition: "opacity 0.28s ease, transform 0.28s ease",
+          }}
+        >
+          {/* Question */}
           <h2
             className="font-cormorant"
             style={{
-              fontSize: "clamp(28px, 4vw, 44px)",
-              fontWeight: 600,
+              fontSize: "clamp(32px, 5.5vw, 64px)",
+              fontWeight: 400,
               color: "oklch(0.18 0.01 60)",
-              marginBottom: "14px",
+              lineHeight: 1.15,
+              marginBottom: "48px",
+              minHeight: "1.15em",
+              fontStyle: "italic",
+              letterSpacing: "-0.01em",
             }}
           >
-            Get in touch with us
+            {typedQuestion}
+            {isTyping && (
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "2px",
+                  height: "0.8em",
+                  backgroundColor: "oklch(0.52 0.09 50)",
+                  marginLeft: "3px",
+                  verticalAlign: "middle",
+                  animation: "contactBlink 0.9s step-end infinite",
+                }}
+              />
+            )}
           </h2>
-          <p
-            className="font-poppins max-w-xl mx-auto"
-            style={{
-              fontSize: "14px",
-              color: "oklch(0.50 0.02 60)",
-              lineHeight: 1.75,
-            }}
-          >
-            Get in touch and ask us anything. Whether it&apos;s construction
-            planning, project execution, materials, or pricing — we&apos;re here
-            to help you with everything.
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left: Google Map */}
-          <div
-            className="rounded-2xl overflow-hidden h-64 sm:h-80 lg:h-[520px]"
-            style={{ boxShadow: "0 4px 24px oklch(0.42 0.08 155 / 0.10)" }}
-          >
-            <iframe
-              title="Trevia Projects Location"
-              src="https://maps.google.com/maps?q=Guntur,+Andhra+Pradesh,+India&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0, display: "block" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-
-          {/* Right: Contact card */}
-          <div
-            className="rounded-2xl p-4 sm:p-6 lg:p-8"
-            style={{
-              backgroundColor: "oklch(0.97 0.01 80)",
-              boxShadow:
-                "0 2px 16px oklch(0.52 0.09 50 / 0.07), 0 1px 4px oklch(0.52 0.09 50 / 0.05)",
-            }}
-          >
-            <div
-              className="space-y-3 mb-8 pb-8"
-              style={{ borderBottom: "1px solid oklch(0.90 0.01 80)" }}
-            >
-              <div className="flex items-start gap-3">
-                <MapPin
-                  className="w-4 h-4 mt-0.5 flex-shrink-0"
-                  style={{ color: "oklch(0.42 0.08 155)" }}
-                />
-                <p
-                  className="font-poppins"
-                  style={{ fontSize: "13px", color: "oklch(0.38 0.02 60)" }}
-                >
-                  Trevia Projects, Guntur, Andhra Pradesh, India
-                </p>
-              </div>
-              <div className="flex items-center gap-3 w-full">
-                <Mail
-                  className="w-4 h-4 flex-shrink-0"
-                  style={{ color: "oklch(0.42 0.08 155)" }}
-                />
-                <p
-                  className="font-poppins"
-                  style={{ fontSize: "13px", color: "oklch(0.38 0.02 60)" }}
-                >
-                  contact@treviaprojects.com
-                </p>
-              </div>
-              <div className="flex items-center gap-3 w-full">
-                <Phone
-                  className="w-4 h-4 flex-shrink-0"
-                  style={{ color: "oklch(0.42 0.08 155)" }}
-                />
-                <p
-                  className="font-poppins"
-                  style={{ fontSize: "13px", color: "oklch(0.38 0.02 60)" }}
-                >
-                  +91 94909 00088
-                </p>
-              </div>
+          {/* Input area */}
+          {step.type === "select" ? (
+            <div className="flex flex-wrap gap-3" data-ocid="contact.select">
+              {"options" in step &&
+                step.options.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => advanceStep(opt)}
+                    className="font-poppins transition-all"
+                    style={{
+                      fontSize: "13px",
+                      letterSpacing: "0.04em",
+                      padding: "12px 22px",
+                      border: "1px solid oklch(0.82 0.03 75)",
+                      borderRadius: "999px",
+                      backgroundColor: "oklch(1 0 0)",
+                      color: "oklch(0.40 0.02 60)",
+                      cursor: "pointer",
+                      transition:
+                        "border-color 0.2s, color 0.2s, background-color 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      const btn = e.currentTarget;
+                      btn.style.borderColor = "oklch(0.52 0.09 50)";
+                      btn.style.color = "oklch(0.18 0.01 60)";
+                      btn.style.backgroundColor = "oklch(0.95 0.02 75)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const btn = e.currentTarget;
+                      btn.style.borderColor = "oklch(0.82 0.03 75)";
+                      btn.style.color = "oklch(0.40 0.02 60)";
+                      btn.style.backgroundColor = "oklch(1 0 0)";
+                    }}
+                  >
+                    {opt}
+                  </button>
+                ))}
             </div>
-
-            {submitted ? (
-              <div
-                data-ocid="contact.success_state"
-                className="flex flex-col items-center justify-center py-12 text-center"
-              >
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "oklch(0.42 0.08 155 / 0.12)" }}
-                >
-                  <span style={{ fontSize: "22px" }}>✓</span>
-                </div>
-                <p
-                  className="font-cormorant"
-                  style={{
-                    fontSize: "22px",
-                    color: "oklch(0.18 0.01 60)",
-                    fontWeight: 600,
-                  }}
-                >
-                  Thank You!
-                </p>
+          ) : step.type === "textarea" ? (
+            <div>
+              <textarea
+                ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                data-ocid="contact.textarea"
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setError("");
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={step.placeholder as string}
+                rows={4}
+                className="w-full font-poppins bg-transparent resize-none outline-none"
+                style={{
+                  fontSize: "clamp(16px, 2.2vw, 22px)",
+                  color: "oklch(0.18 0.01 60)",
+                  borderBottom: "1px solid oklch(0.78 0.03 75)",
+                  borderTop: "none",
+                  borderLeft: "none",
+                  borderRight: "none",
+                  borderRadius: 0,
+                  padding: "12px 0",
+                  caretColor: "oklch(0.52 0.09 50)",
+                  lineHeight: 1.6,
+                  transition: "border-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderBottomColor =
+                    "oklch(0.52 0.09 50)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderBottomColor =
+                    "oklch(0.78 0.03 75)";
+                }}
+              />
+              {error && (
                 <p
                   className="font-poppins mt-2"
-                  style={{ fontSize: "13px", color: "oklch(0.50 0.02 60)" }}
-                >
-                  We received your message and will be in touch soon.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="contact-name"
-                    className="font-poppins block mb-1"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      color: "oklch(0.45 0.02 60)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Your Name *
-                  </label>
-                  <input
-                    id="contact-name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={handleChange}
-                    data-ocid="contact.input"
-                    className="w-full font-poppins rounded-lg px-4 outline-none transition-all"
-                    style={{
-                      fontSize: "13px",
-                      border: "1px solid oklch(0.88 0.01 80)",
-                      backgroundColor: "oklch(1 0 0)",
-                      color: "oklch(0.22 0.01 60)",
-                      minHeight: "44px",
-                      paddingTop: "10px",
-                      paddingBottom: "10px",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-email"
-                    className="font-poppins block mb-1"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      color: "oklch(0.45 0.02 60)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Email Address *
-                  </label>
-                  <input
-                    id="contact-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="john@email.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full font-poppins rounded-lg px-4 outline-none transition-all"
-                    style={{
-                      fontSize: "13px",
-                      border: "1px solid oklch(0.88 0.01 80)",
-                      backgroundColor: "oklch(1 0 0)",
-                      color: "oklch(0.22 0.01 60)",
-                      minHeight: "44px",
-                      paddingTop: "10px",
-                      paddingBottom: "10px",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-phone"
-                    className="font-poppins block mb-1"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      color: "oklch(0.45 0.02 60)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Phone Number *
-                  </label>
-                  <input
-                    id="contact-phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    placeholder="+91 00000 00000"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full font-poppins rounded-lg px-4 outline-none transition-all"
-                    style={{
-                      fontSize: "13px",
-                      border: "1px solid oklch(0.88 0.01 80)",
-                      backgroundColor: "oklch(1 0 0)",
-                      color: "oklch(0.22 0.01 60)",
-                      minHeight: "44px",
-                      paddingTop: "10px",
-                      paddingBottom: "10px",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-interested"
-                    className="font-poppins block mb-1"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      color: "oklch(0.45 0.02 60)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Interested In
-                  </label>
-                  <select
-                    id="contact-interested"
-                    name="interested"
-                    value={formData.interested}
-                    onChange={handleChange}
-                    data-ocid="contact.select"
-                    className="w-full font-poppins rounded-lg px-4 outline-none transition-all appearance-none"
-                    style={{
-                      fontSize: "13px",
-                      border: "1px solid oklch(0.88 0.01 80)",
-                      backgroundColor: "oklch(1 0 0)",
-                      minHeight: "44px",
-                      paddingTop: "10px",
-                      paddingBottom: "10px",
-                      color: formData.interested
-                        ? "oklch(0.22 0.01 60)"
-                        : "oklch(0.60 0.02 60)",
-                    }}
-                  >
-                    <option value="">Select a service</option>
-                    <option value="construction">Construction Services</option>
-                    <option value="interior">Interior Construction</option>
-                    <option value="architectural">
-                      Architectural Planning
-                    </option>
-                    <option value="waterproofing">
-                      Waterproofing Solutions
-                    </option>
-                    <option value="renovation">
-                      Renovation &amp; Remodeling
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-message"
-                    className="font-poppins block mb-1"
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      color: "oklch(0.45 0.02 60)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    How can we help?
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    name="message"
-                    rows={3}
-                    placeholder="Tell us about your project..."
-                    value={formData.message}
-                    onChange={handleChange}
-                    data-ocid="contact.textarea"
-                    className="w-full font-poppins rounded-lg px-4 py-2.5 outline-none transition-all resize-none"
-                    style={{
-                      fontSize: "13px",
-                      border: "1px solid oklch(0.88 0.01 80)",
-                      backgroundColor: "oklch(1 0 0)",
-                      color: "oklch(0.22 0.01 60)",
-                    }}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  data-ocid="contact.submit_button"
-                  disabled={isSubmitting}
-                  className="w-full font-poppins rounded-lg py-3 uppercase tracking-[0.1em] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                   style={{
                     fontSize: "12px",
-                    fontWeight: 600,
-                    backgroundColor: "oklch(0.42 0.08 155)",
-                    color: "#ffffff",
-                    cursor: isSubmitting ? "not-allowed" : "pointer",
-                    border: "none",
+                    color: "oklch(0.55 0.18 25)",
+                    letterSpacing: "0.04em",
                   }}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    "Send Message"
-                  )}
-                </button>
-
-                <p
-                  className="font-poppins text-center"
-                  style={{ fontSize: "10px", color: "oklch(0.65 0.02 60)" }}
-                >
-                  By clicking, you agree to our Terms &amp; Conditions and
-                  Privacy Policy.
+                  {error}
                 </p>
-              </form>
-            )}
-          </div>
+              )}
+              <p
+                className="font-poppins mt-4"
+                style={{
+                  fontSize: "11px",
+                  color: "oklch(0.65 0.02 60)",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Ctrl + Enter ↵ to continue
+              </p>
+            </div>
+          ) : (
+            <div>
+              <input
+                ref={inputRef as React.RefObject<HTMLInputElement>}
+                data-ocid="contact.input"
+                type={step.type}
+                value={inputValue}
+                onChange={(e) => {
+                  if (step.key === "phone") {
+                    const digits = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+                    setInputValue(digits);
+                  } else {
+                    setInputValue(e.target.value);
+                  }
+                  setError("");
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={step.placeholder as string}
+                maxLength={step.key === "phone" ? 10 : undefined}
+                className="w-full font-poppins bg-transparent outline-none"
+                style={{
+                  fontSize: "clamp(18px, 2.8vw, 28px)",
+                  color: "oklch(0.18 0.01 60)",
+                  borderBottom: "1px solid oklch(0.78 0.03 75)",
+                  borderTop: "none",
+                  borderLeft: "none",
+                  borderRight: "none",
+                  borderRadius: 0,
+                  padding: "12px 0",
+                  caretColor: "oklch(0.52 0.09 50)",
+                  transition: "border-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderBottomColor =
+                    "oklch(0.52 0.09 50)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderBottomColor =
+                    "oklch(0.78 0.03 75)";
+                }}
+              />
+              {error && (
+                <p
+                  className="font-poppins mt-2"
+                  style={{
+                    fontSize: "12px",
+                    color: "oklch(0.55 0.18 25)",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {error}
+                </p>
+              )}
+              <p
+                className="font-poppins mt-4"
+                style={{
+                  fontSize: "11px",
+                  color: "oklch(0.65 0.02 60)",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                Press Enter ↵ to continue
+              </p>
+            </div>
+          )}
+
+          {/* Next/Submit button */}
+          {step.type !== "select" && (
+            <button
+              type="button"
+              data-ocid={
+                currentStep === STEPS.length - 1
+                  ? "contact.submit_button"
+                  : "contact.primary_button"
+              }
+              onClick={() => advanceStep()}
+              disabled={!inputValue.trim()}
+              className="font-poppins mt-8 inline-flex items-center gap-3 transition-all"
+              style={{
+                fontSize: "12px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: inputValue.trim()
+                  ? "oklch(0.52 0.09 50)"
+                  : "oklch(0.72 0.02 60)",
+                background: "transparent",
+                border: "none",
+                cursor: inputValue.trim() ? "pointer" : "not-allowed",
+                padding: 0,
+                transition: "color 0.2s",
+              }}
+            >
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "32px",
+                  height: "1px",
+                  backgroundColor: "currentColor",
+                }}
+              />
+              {currentStep === STEPS.length - 1 ? "Submit" : "Next"}
+              <span style={{ fontSize: "16px" }}>&#8594;</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Progress bar */}
+      <div
+        className="relative z-10 w-full h-px"
+        style={{ backgroundColor: "oklch(0.88 0.02 75)" }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${(currentStep / STEPS.length) * 100}%`,
+            backgroundColor: "oklch(0.52 0.09 50)",
+            transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        />
+      </div>
+
+      {/* Previous answers breadcrumb */}
+      {completedAnswers.length > 0 && (
+        <div
+          className="relative z-10 w-full px-8 md:px-16 py-4 flex flex-wrap items-center gap-2"
+          style={{ backgroundColor: "oklch(0.94 0.01 80)" }}
+        >
+          {/* biome-ignore lint/suspicious/noArrayIndexKey: stable ordered list */}
+          {completedAnswers.map((ans, i) => (
+            <span key={ans} className="flex items-center gap-2">
+              <span
+                className="font-poppins"
+                style={{
+                  fontSize: "11px",
+                  color: "oklch(0.50 0.02 60)",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {ans}
+              </span>
+              {i < completedAnswers.length - 1 && (
+                <span
+                  style={{
+                    color: "oklch(0.72 0.02 60)",
+                    fontSize: "10px",
+                  }}
+                >
+                  &middot;
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes contactBlink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 }
