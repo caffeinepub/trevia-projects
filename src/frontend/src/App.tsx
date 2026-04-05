@@ -2870,73 +2870,74 @@ function ContactUsSection() {
             </div>
           )}
 
-          {/* Next/Submit button */}
+          {/* Action buttons: Next/Submit + Back stacked vertically */}
           {step.type !== "select" && (
-            <button
-              type="button"
-              data-ocid={
-                currentStep === STEPS.length - 1
-                  ? "contact.submit_button"
-                  : "contact.primary_button"
-              }
-              onClick={() => advanceStep()}
-              disabled={!inputValue.trim()}
-              className="font-poppins mt-8 inline-flex items-center gap-3 transition-all"
-              style={{
-                fontSize: "12px",
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: inputValue.trim()
-                  ? "oklch(0.52 0.09 50)"
-                  : "oklch(0.72 0.02 60)",
-                background: "transparent",
-                border: "none",
-                cursor: inputValue.trim() ? "pointer" : "not-allowed",
-                padding: 0,
-                transition: "color 0.2s",
-              }}
-            >
-              <span
+            <div className="flex flex-col items-start mt-8 gap-4">
+              <button
+                type="button"
+                data-ocid={
+                  currentStep === STEPS.length - 1
+                    ? "contact.submit_button"
+                    : "contact.primary_button"
+                }
+                onClick={() => advanceStep()}
+                disabled={!inputValue.trim()}
+                className="font-poppins inline-flex items-center gap-3 transition-all"
                 style={{
-                  display: "inline-block",
-                  width: "32px",
-                  height: "1px",
-                  backgroundColor: "currentColor",
+                  fontSize: "12px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: inputValue.trim()
+                    ? "oklch(0.52 0.09 50)"
+                    : "oklch(0.72 0.02 60)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: inputValue.trim() ? "pointer" : "not-allowed",
+                  padding: 0,
+                  transition: "color 0.2s",
                 }}
-              />
-              {currentStep === STEPS.length - 1 ? "Submit" : "Next"}
-              <span style={{ fontSize: "16px" }}>&#8594;</span>
-            </button>
-          )}
+              >
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "32px",
+                    height: "1px",
+                    backgroundColor: "currentColor",
+                  }}
+                />
+                {currentStep === STEPS.length - 1 ? "Submit" : "Next"}
+                <span style={{ fontSize: "16px" }}>&#8594;</span>
+              </button>
 
-          {/* Back button */}
-          {currentStep > 0 && (
-            <button
-              type="button"
-              data-ocid="contact.back_button"
-              onClick={goBack}
-              className="font-poppins mt-4 inline-flex items-center gap-3 transition-all"
-              style={{
-                fontSize: "11px",
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "oklch(0.62 0.02 60)",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "oklch(0.40 0.02 60)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "oklch(0.62 0.02 60)";
-              }}
-            >
-              <span style={{ fontSize: "14px" }}>&#8592;</span>
-              Back
-            </button>
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  data-ocid="contact.back_button"
+                  onClick={goBack}
+                  className="font-poppins inline-flex items-center gap-3 transition-all"
+                  style={{
+                    fontSize: "11px",
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "oklch(0.62 0.02 60)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "oklch(0.40 0.02 60)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "oklch(0.62 0.02 60)";
+                  }}
+                >
+                  <span style={{ fontSize: "14px" }}>&#8592;</span>
+                  Back
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
