@@ -100,6 +100,8 @@ const SERVICES = [
 let selectedProduct: (typeof PRODUCTS)[number] | null = null;
 // Selected service for detail page (module-level state)
 let selectedService: (typeof SERVICES)[number] | null = null;
+// Selected project for detail page (module-level state)
+let selectedProject: (typeof PROJECTS)[number] | null = null;
 
 const PRODUCTS = [
   {
@@ -1123,176 +1125,306 @@ const PROJECTS = [
 ];
 
 // ---------------------------------------------------------------------------
-// ProjectsSection (Home page section)
+// ProjectDetailPage - Full page for project details
 // ---------------------------------------------------------------------------
-function ProjectDetailModal({
-  project,
-  onClose,
-  showViewAll = false,
-}: {
-  project: (typeof PROJECTS)[number];
-  onClose: () => void;
-  showViewAll?: boolean;
-}) {
+function ProjectDetailPage() {
   const navigate = useNavigate();
+  const project = selectedProject ?? PROJECTS[0];
+
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
+
+  function handleContactWhatsApp() {
+    const msg = encodeURIComponent(
+      `Hello, I am interested in your project:\n\nProject: ${project.title}\nType: ${project.type}\nLocation: ${project.location}\n\nPlease share more details.`,
+    );
+    window.open(`https://wa.me/919000564939?text=${msg}`, "_blank");
+  }
 
   return (
     <div
-      data-ocid="projects.modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
-      onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") onClose();
+      className="page-enter"
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "oklch(0.97 0.005 80)",
+        fontFamily: "Poppins, sans-serif",
       }}
-      tabIndex={-1}
     >
+      <Header />
+
+      {/* Back button */}
       <div
-        className="relative bg-white rounded-2xl overflow-hidden w-full max-w-2xl shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        style={{ maxHeight: "90vh", overflowY: "auto" }}
+        style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px 0" }}
       >
         <button
           type="button"
-          data-ocid="projects.modal.close_button"
-          onClick={onClose}
-          className="absolute top-3 right-3 z-10 flex items-center justify-center rounded-full bg-white/90 shadow transition-all hover:bg-white"
+          data-ocid="project_detail.back.button"
+          onClick={() => navigate({ to: "/projects" })}
           style={{
-            width: "36px",
-            height: "36px",
+            background: "none",
             border: "none",
             cursor: "pointer",
+            color: "oklch(0.45 0.08 60)",
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontFamily: "Poppins, sans-serif",
           }}
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <title>Close</title>
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          ← Back to Projects
         </button>
+      </div>
+
+      {/* Hero Section */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "24px auto 0",
+          padding: "0 16px",
+        }}
+      >
         <div
-          className="relative overflow-hidden"
-          style={{ aspectRatio: "16/9" }}
+          style={{
+            borderRadius: "20px",
+            overflow: "hidden",
+            position: "relative",
+            aspectRatio: "21/7",
+          }}
         >
           <img
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
-          <span
-            className="absolute top-3 left-3 font-poppins text-white text-[10px] font-semibold px-2.5 py-1 rounded-full"
+          <div
             style={{
-              letterSpacing: "0.08em",
-              backgroundColor:
-                project.status === "Completed"
-                  ? "oklch(0.45 0.14 155)"
-                  : "oklch(0.60 0.18 55)",
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to right, oklch(0.10 0.02 60 / 0.75) 0%, oklch(0.10 0.02 60 / 0.25) 60%, transparent 100%)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              padding: "clamp(20px, 4vw, 48px)",
             }}
           >
-            {project.status}
-          </span>
-        </div>
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h2
-              className="font-cormorant font-semibold"
+            <span
               style={{
-                fontSize: "28px",
-                color: "oklch(0.18 0.01 60)",
-                lineHeight: 1.2,
+                display: "inline-block",
+                marginBottom: "10px",
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                color: "#ffffff",
+                backgroundColor:
+                  project.status === "Completed"
+                    ? "oklch(0.45 0.14 155)"
+                    : "oklch(0.60 0.18 55)",
+                borderRadius: "99px",
+                padding: "4px 14px",
+                width: "fit-content",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              {project.status}
+            </span>
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(28px, 4vw, 52px)",
+                fontWeight: 700,
+                color: "#ffffff",
+                margin: 0,
+                lineHeight: 1.15,
+                maxWidth: "600px",
               }}
             >
               {project.title}
-            </h2>
-            <span
-              className="font-poppins shrink-0"
+            </h1>
+            <p
               style={{
-                fontSize: "12px",
-                color: "oklch(0.55 0.06 55)",
-                fontWeight: 500,
-                marginTop: "5px",
+                fontSize: "clamp(12px, 1.4vw, 15px)",
+                color: "rgba(255,255,255,0.80)",
+                marginTop: "10px",
+                fontFamily: "Poppins, sans-serif",
               }}
             >
-              {project.year}
-            </span>
+              {project.type} · {project.location}
+            </p>
           </div>
-          <p
-            className="font-poppins mb-1"
-            style={{ fontSize: "13px", color: "oklch(0.52 0.04 60)" }}
-          >
-            {project.type} · {project.location}
-          </p>
-          <p
-            className="font-poppins mb-4"
-            style={{ fontSize: "13px", color: "oklch(0.55 0.02 60)" }}
-          >
-            Area: {project.area}
-          </p>
-          <p
-            className="font-poppins"
+        </div>
+      </div>
+
+      {/* Details Section */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "48px auto 0",
+          padding: "0 16px",
+        }}
+      >
+        {/* Info Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "20px",
+            marginBottom: "40px",
+          }}
+        >
+          {[
+            { label: "Area", value: project.area },
+            { label: "Type", value: project.type },
+            { label: "Location", value: project.location },
+            { label: "Timeline", value: project.year },
+          ].map((info) => (
+            <div
+              key={info.label}
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: "14px",
+                padding: "22px 24px",
+                border: "1px solid oklch(0.91 0.01 80)",
+                boxShadow: "0 2px 12px oklch(0.3 0.02 60 / 0.06)",
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: "11px",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "oklch(0.60 0.04 60)",
+                  margin: "0 0 6px",
+                  fontWeight: 500,
+                }}
+              >
+                {info.label}
+              </p>
+              <p
+                style={{
+                  fontFamily: "Cormorant Garamond, serif",
+                  fontSize: "22px",
+                  fontWeight: 600,
+                  color: "oklch(0.18 0.01 60)",
+                  margin: 0,
+                  lineHeight: 1.2,
+                }}
+              >
+                {info.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Description */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "20px",
+            padding: "clamp(28px, 4vw, 48px)",
+            border: "1px solid oklch(0.91 0.01 80)",
+            boxShadow: "0 2px 16px oklch(0.3 0.02 60 / 0.06)",
+            marginBottom: "40px",
+          }}
+        >
+          <h2
             style={{
-              fontSize: "14px",
-              color: "oklch(0.35 0.02 60)",
-              lineHeight: 1.7,
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(22px, 3vw, 32px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              margin: "0 0 16px",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Project Overview
+          </h2>
+          <p
+            style={{
+              fontFamily: "Poppins, sans-serif",
+              fontSize: "15px",
+              color: "oklch(0.38 0.02 60)",
+              lineHeight: 1.85,
+              margin: 0,
             }}
           >
             {project.desc}
           </p>
-          {showViewAll && (
-            <div className="flex justify-center mt-6">
-              <button
-                type="button"
-                data-ocid="projects.modal.view_all.button"
-                onClick={() => {
-                  onClose();
-                  navigate({ to: "/projects" });
-                }}
-                className="font-poppins uppercase tracking-widest transition-all hover:opacity-80 active:scale-95"
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  color: "oklch(0.52 0.09 50)",
-                  border: "1px solid oklch(0.52 0.09 50)",
-                  borderRadius: "2px",
-                  padding: "10px 32px",
-                  background: "transparent",
-                  cursor: "pointer",
-                  minHeight: "44px",
-                }}
-              >
-                View All Projects
-              </button>
-            </div>
-          )}
+        </div>
+
+        {/* WhatsApp Contact */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "60px",
+          }}
+        >
+          <button
+            type="button"
+            data-ocid="project_detail.contact.button"
+            onClick={handleContactWhatsApp}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              backgroundColor: "oklch(0.50 0.16 155)",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "16px 40px",
+              fontSize: "15px",
+              fontWeight: 600,
+              fontFamily: "Poppins, sans-serif",
+              cursor: "pointer",
+              letterSpacing: "0.04em",
+              boxShadow: "0 4px 20px oklch(0.50 0.16 155 / 0.30)",
+              transition:
+                "transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.transform =
+                "translateY(-2px)";
+              (e.currentTarget as HTMLElement).style.boxShadow =
+                "0 8px 28px oklch(0.50 0.16 155 / 0.40)";
+              (e.currentTarget as HTMLElement).style.backgroundColor =
+                "oklch(0.46 0.16 155)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.transform =
+                "translateY(0)";
+              (e.currentTarget as HTMLElement).style.boxShadow =
+                "0 4px 20px oklch(0.50 0.16 155 / 0.30)";
+              (e.currentTarget as HTMLElement).style.backgroundColor =
+                "oklch(0.50 0.16 155)";
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <title>WhatsApp</title>
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.553 4.101 1.519 5.828L0 24l6.335-1.662A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.37l-.36-.214-3.727.977.994-3.634-.235-.374A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z" />
+            </svg>
+            Enquire on WhatsApp
+          </button>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
 
 function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
   const navigate = useNavigate();
-  const [selectedProject, setSelectedProject] = useState<
-    (typeof PROJECTS)[number] | null
-  >(null);
-
   return (
     <section
       data-ocid="projects.section"
@@ -1300,13 +1432,6 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
       className="w-full py-20 px-4 sm:px-6"
       style={{ backgroundColor: "oklch(0.97 0.01 80)" }}
     >
-      {selectedProject && (
-        <ProjectDetailModal
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-          showViewAll={showViewAll}
-        />
-      )}
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-4">
           <h2
@@ -1342,10 +1467,15 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
                 transition:
                   "transform 220ms ease-out, box-shadow 220ms ease-out",
               }}
-              onClick={() => setSelectedProject(project)}
+              onClick={() => {
+                selectedProject = project;
+                navigate({ to: "/project-detail" });
+              }}
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ")
-                  setSelectedProject(project);
+                if (e.key === "Enter" || e.key === " ") {
+                  selectedProject = project;
+                  navigate({ to: "/project-detail" });
+                }
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.transform =
@@ -1468,21 +1598,11 @@ function ProjectsSection({ showViewAll = false }: { showViewAll?: boolean }) {
 function ProjectsPageComponent() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<"All" | "Completed" | "Ongoing">("All");
-  const [selectedProject, setSelectedProject] = useState<
-    (typeof PROJECTS)[number] | null
-  >(null);
-
   const filtered =
     filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.status === filter);
 
   return (
     <PageShell>
-      {selectedProject && (
-        <ProjectDetailModal
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
-      )}
       <section
         data-ocid="projects.page"
         className="w-full pt-14 pb-2 px-4 sm:px-6"
@@ -1555,10 +1675,15 @@ function ProjectsPageComponent() {
                   transition:
                     "transform 220ms ease-out, box-shadow 220ms ease-out",
                 }}
-                onClick={() => setSelectedProject(project)}
+                onClick={() => {
+                  selectedProject = project;
+                  navigate({ to: "/project-detail" });
+                }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ")
-                    setSelectedProject(project);
+                  if (e.key === "Enter" || e.key === " ") {
+                    selectedProject = project;
+                    navigate({ to: "/project-detail" });
+                  }
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.transform =
@@ -3656,6 +3781,12 @@ const serviceDetailRoute = createRoute({
   component: ServiceDetailPage,
 });
 
+const projectDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/project-detail",
+  component: ProjectDetailPage,
+});
+
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/projects",
@@ -3670,6 +3801,7 @@ const routeTree = rootRoute.addChildren([
   adminRoute,
   productDetailRoute,
   serviceDetailRoute,
+  projectDetailRoute,
   projectsRoute,
 ]);
 
