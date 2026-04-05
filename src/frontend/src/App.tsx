@@ -2408,6 +2408,19 @@ function ContactUsSection() {
     }
   }
 
+  function goBack() {
+    if (currentStep === 0) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      const prevStep = currentStep - 1;
+      const prevKey = STEPS[prevStep].key;
+      setCurrentStep(prevStep);
+      setInputValue(answers[prevKey] ?? "");
+      setError("");
+      setIsTransitioning(false);
+    }, 320);
+  }
+
   const completedAnswers = STEPS.slice(0, currentStep)
     .map((s) => answers[s.key])
     .filter(Boolean);
@@ -2663,42 +2676,72 @@ function ContactUsSection() {
 
           {/* Input area */}
           {step.type === "select" ? (
-            <div className="flex flex-wrap gap-3" data-ocid="contact.select">
-              {"options" in step &&
-                step.options.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => advanceStep(opt)}
-                    className="font-poppins transition-all"
-                    style={{
-                      fontSize: "13px",
-                      letterSpacing: "0.04em",
-                      padding: "12px 22px",
-                      border: "1px solid oklch(0.82 0.03 75)",
-                      borderRadius: "999px",
-                      backgroundColor: "oklch(1 0 0)",
-                      color: "oklch(0.40 0.02 60)",
-                      cursor: "pointer",
-                      transition:
-                        "border-color 0.2s, color 0.2s, background-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      const btn = e.currentTarget;
-                      btn.style.borderColor = "oklch(0.52 0.09 50)";
-                      btn.style.color = "oklch(0.18 0.01 60)";
-                      btn.style.backgroundColor = "oklch(0.95 0.02 75)";
-                    }}
-                    onMouseLeave={(e) => {
-                      const btn = e.currentTarget;
-                      btn.style.borderColor = "oklch(0.82 0.03 75)";
-                      btn.style.color = "oklch(0.40 0.02 60)";
-                      btn.style.backgroundColor = "oklch(1 0 0)";
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
+            <div>
+              <div className="flex flex-wrap gap-3" data-ocid="contact.select">
+                {"options" in step &&
+                  step.options.map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => advanceStep(opt)}
+                      className="font-poppins transition-all"
+                      style={{
+                        fontSize: "13px",
+                        letterSpacing: "0.04em",
+                        padding: "12px 22px",
+                        border: "1px solid oklch(0.82 0.03 75)",
+                        borderRadius: "999px",
+                        backgroundColor: "oklch(1 0 0)",
+                        color: "oklch(0.40 0.02 60)",
+                        cursor: "pointer",
+                        transition:
+                          "border-color 0.2s, color 0.2s, background-color 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        const btn = e.currentTarget;
+                        btn.style.borderColor = "oklch(0.52 0.09 50)";
+                        btn.style.color = "oklch(0.18 0.01 60)";
+                        btn.style.backgroundColor = "oklch(0.95 0.02 75)";
+                      }}
+                      onMouseLeave={(e) => {
+                        const btn = e.currentTarget;
+                        btn.style.borderColor = "oklch(0.82 0.03 75)";
+                        btn.style.color = "oklch(0.40 0.02 60)";
+                        btn.style.backgroundColor = "oklch(1 0 0)";
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+              </div>
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  data-ocid="contact.back_button"
+                  onClick={goBack}
+                  className="font-poppins mt-6 inline-flex items-center gap-3 transition-all"
+                  style={{
+                    fontSize: "11px",
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "oklch(0.62 0.02 60)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "oklch(0.40 0.02 60)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "oklch(0.62 0.02 60)";
+                  }}
+                >
+                  <span style={{ fontSize: "14px" }}>&#8592;</span>
+                  Back
+                </button>
+              )}
             </div>
           ) : step.type === "textarea" ? (
             <div>
@@ -2863,6 +2906,36 @@ function ContactUsSection() {
               />
               {currentStep === STEPS.length - 1 ? "Submit" : "Next"}
               <span style={{ fontSize: "16px" }}>&#8594;</span>
+            </button>
+          )}
+
+          {/* Back button */}
+          {currentStep > 0 && (
+            <button
+              type="button"
+              data-ocid="contact.back_button"
+              onClick={goBack}
+              className="font-poppins mt-4 inline-flex items-center gap-3 transition-all"
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "oklch(0.62 0.02 60)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "oklch(0.40 0.02 60)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "oklch(0.62 0.02 60)";
+              }}
+            >
+              <span style={{ fontSize: "14px" }}>&#8592;</span>
+              Back
             </button>
           )}
         </div>
