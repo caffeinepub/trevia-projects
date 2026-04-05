@@ -618,15 +618,6 @@ function Footer() {
                   Projects
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigate({ to: "/admin" })}
-                  className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer bg-transparent border-0 p-0"
-                >
-                  Admin
-                </button>
-              </li>
             </ul>
           </div>
 
@@ -671,7 +662,7 @@ function Footer() {
                   contact@treviaprojects.com
                 </button>
               </li>
-              <li className="text-sm text-white/60">+91 XXXXX XXXXX</li>
+              <li className="text-sm text-white/60">+91 94909 00088</li>
               <li className="text-sm text-white/60">
                 Guntur, Andhra Pradesh, India
               </li>
@@ -1066,6 +1057,19 @@ const PROJECTS = [
     area: "4,200 sq.ft",
     desc: "Luxury villa with modern architecture, premium interiors, and a manicured landscaped garden — crafted for refined living.",
     image: "/assets/generated/project-villa-completed.dim_800x500.jpg",
+    client: "Mr. Rajesh Kumar",
+    materials: [
+      "RCC Structure",
+      "AAC Blocks",
+      "Marble Flooring",
+      "Teak Wood",
+      "Aluminium Windows",
+    ],
+    gallery: [
+      "/assets/generated/project-villa-completed.dim_800x500.jpg",
+      "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+      "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+    ],
   },
   {
     id: 2,
@@ -1077,6 +1081,19 @@ const PROJECTS = [
     area: "12,000 sq.ft",
     desc: "Contemporary office complex with glass facade, modern amenities, and energy-efficient design built for thriving businesses.",
     image: "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+    client: "Horizon Enterprises Pvt. Ltd.",
+    materials: [
+      "Steel Frame",
+      "Glass Facade",
+      "Granite Flooring",
+      "Structural Glass",
+      "ACP Panels",
+    ],
+    gallery: [
+      "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+      "/assets/generated/project-villa-completed.dim_800x500.jpg",
+      "/assets/generated/project-commercial-ongoing.dim_800x500.jpg",
+    ],
   },
   {
     id: 3,
@@ -1088,6 +1105,19 @@ const PROJECTS = [
     area: "24 Units",
     desc: "Premium 24-unit apartment complex with modern amenities, underground parking, and a stunning rooftop terrace.",
     image: "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+    client: "Skyline Builders & Developers",
+    materials: [
+      "RCC Frame",
+      "Fly Ash Bricks",
+      "Vitrified Tiles",
+      "UPVC Windows",
+      "Cement Plaster",
+    ],
+    gallery: [
+      "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+      "/assets/generated/project-villa-ongoing.dim_800x500.jpg",
+      "/assets/generated/project-renovation-ongoing.dim_800x500.jpg",
+    ],
   },
   {
     id: 4,
@@ -1099,6 +1129,19 @@ const PROJECTS = [
     area: "5,500 sq.ft",
     desc: "5,500 sq.ft premium villa with pool, smart home integration, and contemporary elevation design for a discerning client.",
     image: "/assets/generated/project-villa-ongoing.dim_800x500.jpg",
+    client: "Mr. Suresh Reddy",
+    materials: [
+      "Premium RCC",
+      "Natural Stone",
+      "Italian Marble",
+      "Smart Home Wiring",
+      "Infinity Pool Tiles",
+    ],
+    gallery: [
+      "/assets/generated/project-villa-ongoing.dim_800x500.jpg",
+      "/assets/generated/project-villa-completed.dim_800x500.jpg",
+      "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+    ],
   },
   {
     id: 5,
@@ -1110,6 +1153,19 @@ const PROJECTS = [
     area: "45,000 sq.ft",
     desc: "45,000 sq.ft multi-level commercial complex with retail, office, and food court spaces — a landmark in the making.",
     image: "/assets/generated/project-commercial-ongoing.dim_800x500.jpg",
+    client: "Central Realty Group",
+    materials: [
+      "Steel Structure",
+      "Curtain Wall Glass",
+      "Polished Concrete",
+      "HVAC Systems",
+      "Epoxy Flooring",
+    ],
+    gallery: [
+      "/assets/generated/project-commercial-ongoing.dim_800x500.jpg",
+      "/assets/generated/project-commercial-completed.dim_800x500.jpg",
+      "/assets/generated/project-villa-completed.dim_800x500.jpg",
+    ],
   },
   {
     id: 6,
@@ -1121,6 +1177,19 @@ const PROJECTS = [
     area: "3,200 sq.ft",
     desc: "Complete home transformation spanning 3,200 sq.ft — modular kitchen, premium flooring, false ceilings, and modern interiors.",
     image: "/assets/generated/project-renovation-ongoing.dim_800x500.jpg",
+    client: "Mr. & Mrs. Prasad",
+    materials: [
+      "Gypsum False Ceiling",
+      "Wooden Laminate Flooring",
+      "Modular Kitchen Panels",
+      "PVC Wall Panels",
+      "LED Track Lighting",
+    ],
+    gallery: [
+      "/assets/generated/project-renovation-ongoing.dim_800x500.jpg",
+      "/assets/generated/project-villa-completed.dim_800x500.jpg",
+      "/assets/generated/project-apartment-completed.dim_800x500.jpg",
+    ],
   },
 ];
 
@@ -1130,6 +1199,9 @@ const PROJECTS = [
 function ProjectDetailPage() {
   const navigate = useNavigate();
   const project = selectedProject ?? PROJECTS[0];
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -1139,7 +1211,7 @@ function ProjectDetailPage() {
     const msg = encodeURIComponent(
       `Hello, I am interested in your project:\n\nProject: ${project.title}\nType: ${project.type}\nLocation: ${project.location}\n\nPlease share more details.`,
     );
-    window.open(`https://wa.me/919000564939?text=${msg}`, "_blank");
+    window.open(`https://wa.me/919490900088?text=${msg}`, "_blank");
   }
 
   return (
@@ -1279,6 +1351,7 @@ function ProjectDetailPage() {
             { label: "Type", value: project.type },
             { label: "Location", value: project.location },
             { label: "Timeline", value: project.year },
+            { label: "Client", value: project.client },
           ].map((info) => (
             <div
               key={info.label}
@@ -1354,6 +1427,187 @@ function ProjectDetailPage() {
             {project.desc}
           </p>
         </div>
+
+        {/* Materials Used */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "20px",
+            padding: "clamp(28px, 4vw, 48px)",
+            border: "1px solid oklch(0.91 0.01 80)",
+            boxShadow: "0 2px 16px oklch(0.3 0.02 60 / 0.06)",
+            marginBottom: "40px",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(22px, 3vw, 32px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              margin: "0 0 20px",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Materials Used
+          </h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {project.materials.map((mat) => (
+              <span
+                key={mat}
+                style={{
+                  backgroundColor: "oklch(0.96 0.01 80)",
+                  border: "1px solid oklch(0.88 0.02 60)",
+                  borderRadius: "99px",
+                  padding: "6px 16px",
+                  fontSize: "13px",
+                  fontFamily: "Poppins, sans-serif",
+                  color: "oklch(0.35 0.04 60)",
+                  fontWeight: 500,
+                }}
+              >
+                {mat}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Photo Gallery */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "20px",
+            padding: "clamp(28px, 4vw, 48px)",
+            border: "1px solid oklch(0.91 0.01 80)",
+            boxShadow: "0 2px 16px oklch(0.3 0.02 60 / 0.06)",
+            marginBottom: "40px",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(22px, 3vw, 32px)",
+              fontWeight: 600,
+              color: "oklch(0.18 0.01 60)",
+              margin: "0 0 20px",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Project Gallery
+          </h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {project.gallery.map((img, idx) => (
+              <button
+                key={img}
+                type="button"
+                data-ocid={`project_detail.gallery.item.${idx + 1}`}
+                onClick={() => setSelectedGalleryImage(img)}
+                style={{
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  cursor: "zoom-in",
+                  aspectRatio: "16/10",
+                  boxShadow: "0 2px 12px oklch(0.3 0.02 60 / 0.10)",
+                  padding: 0,
+                  border: "none",
+                  background: "none",
+                  display: "block",
+                  width: "100%",
+                }}
+              >
+                <img
+                  src={img}
+                  alt={`Gallery ${idx + 1}`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 300ms ease",
+                    display: "block",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "scale(1.04)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "scale(1)";
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Lightbox overlay */}
+        {selectedGalleryImage && (
+          <dialog
+            data-ocid="project_detail.gallery.modal"
+            open
+            onClick={() => setSelectedGalleryImage(null)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setSelectedGalleryImage(null);
+            }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.85)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+              cursor: "zoom-out",
+              border: "none",
+              maxWidth: "100vw",
+              maxHeight: "100vh",
+              width: "100vw",
+              height: "100vh",
+              margin: 0,
+            }}
+          >
+            <img
+              src={selectedGalleryImage}
+              alt="Gallery preview"
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "85vh",
+                borderRadius: "16px",
+                objectFit: "contain",
+                boxShadow: "0 8px 48px rgba(0,0,0,0.5)",
+              }}
+            />
+            <button
+              type="button"
+              data-ocid="project_detail.gallery.close_button"
+              onClick={() => setSelectedGalleryImage(null)}
+              style={{
+                position: "absolute",
+                top: "24px",
+                right: "24px",
+                background: "rgba(255,255,255,0.15)",
+                border: "none",
+                borderRadius: "50%",
+                width: "44px",
+                height: "44px",
+                color: "#fff",
+                fontSize: "22px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+          </dialog>
+        )}
 
         {/* WhatsApp Contact */}
         <div
@@ -2005,6 +2259,7 @@ function ContactUsSection() {
           interested: formData.interested,
           message: formData.message,
           date: new Date().toISOString(),
+          status: "new",
         });
         localStorage.setItem(
           "trevia_contact_submissions",
@@ -2123,7 +2378,7 @@ function ContactUsSection() {
                   className="font-poppins"
                   style={{ fontSize: "13px", color: "oklch(0.38 0.02 60)" }}
                 >
-                  +91 XXXXX XXXXX
+                  +91 94909 00088
                 </p>
               </div>
             </div>
@@ -2891,7 +3146,7 @@ function ServiceDetailPage() {
     const msg = encodeURIComponent(
       `Hello, I am interested in your service:\n\nService: ${service.title}\nPlan: ${planName}\nPrice: ${planPrice}\n\nPlease share more details.`,
     );
-    window.open(`https://wa.me/919000564939?text=${msg}`, "_blank");
+    window.open(`https://wa.me/919490900088?text=${msg}`, "_blank");
   }
 
   return (
@@ -3402,7 +3657,7 @@ function ProductDetailPage() {
           const msg = encodeURIComponent(
             `Hello, I want to buy this product:\n\nProduct Name: ${product.name}\nPrice: ${product.price}\nDescription: ${product.desc}`,
           );
-          window.open(`https://wa.me/919000564939?text=${msg}`, "_blank");
+          window.open(`https://wa.me/919490900088?text=${msg}`, "_blank");
           setBuying(false);
           return 0;
         }
@@ -3766,7 +4021,7 @@ const servicesRoute = createRoute({
 });
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/admin",
+  path: "/authority",
   component: AdminPage,
 });
 const productDetailRoute = createRoute({

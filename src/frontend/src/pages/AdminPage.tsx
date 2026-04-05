@@ -36,6 +36,7 @@ import {
   Package,
   Pencil,
   Plus,
+  RefreshCw,
   Save,
   Settings,
   Shield,
@@ -1904,6 +1905,12 @@ function AdminContacts({
 }) {
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
 
+  function handleRefresh() {
+    const fresh = getStoredContacts();
+    onChange(fresh);
+    toast.success("Contacts refreshed");
+  }
+
   function toggleStatus(idx: number) {
     const updated = contacts.map((c, i) =>
       i === idx
@@ -1940,22 +1947,53 @@ function AdminContacts({
 
   return (
     <div data-ocid="admin.contacts.section">
-      <div style={{ marginBottom: "22px" }}>
-        <h2
+      <div
+        style={{
+          marginBottom: "22px",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              fontSize: "22px",
+              fontWeight: 700,
+              color: T.textPrimary,
+              margin: "0 0 3px",
+              fontFamily: T.fontDisp,
+            }}
+          >
+            Contact Submissions
+          </h2>
+          <p style={{ color: T.textSecondary, fontSize: "13px", margin: 0 }}>
+            {contacts.length} submission{contacts.length !== 1 ? "s" : ""}{" "}
+            received
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleRefresh}
+          data-ocid="admin.contacts.button"
           style={{
-            fontSize: "22px",
-            fontWeight: 700,
-            color: T.textPrimary,
-            margin: "0 0 3px",
-            fontFamily: T.fontDisp,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "7px 14px",
+            borderRadius: "8px",
+            border: `1px solid ${T.border}`,
+            backgroundColor: T.card,
+            color: T.textSecondary,
+            fontSize: "12px",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: T.fontBody,
           }}
         >
-          Contact Submissions
-        </h2>
-        <p style={{ color: T.textSecondary, fontSize: "13px", margin: 0 }}>
-          {contacts.length} submission{contacts.length !== 1 ? "s" : ""}{" "}
-          received
-        </p>
+          <RefreshCw size={13} />
+          Refresh
+        </button>
       </div>
       {contacts.length === 0 ? (
         <div
