@@ -675,17 +675,6 @@ function Footer() {
             &copy; {new Date().getFullYear()} Trevia Projects. All rights
             reserved.
           </p>
-          <p>
-            Built with ❤️ using{" "}
-            <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-white/70 transition-colors"
-            >
-              caffeine.ai
-            </a>
-          </p>
         </div>
       </div>
     </footer>
